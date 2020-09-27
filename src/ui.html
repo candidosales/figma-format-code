@@ -1,0 +1,28 @@
+<label class="select__label" for="select-format">Choose the format:</label>
+<select class="select__menu" name="select-format" id="select-format">
+  <option value="javascript">Javascript</option>
+  <option value="json">JSON</option>
+  <option value="html">HTML</option>
+  <option value="markdown">Markdown</option>
+</select>
+
+<!-- <label class="select__label" for="select-theme">Choose the theme:</label>
+<select class="select__menu" name="select-theme" id="select-theme">
+  <option value="javascript">Javascript</option>
+  <option value="json">JSON</option>
+  <option value="html">HTML</option>
+</select> -->
+
+<div class="compare">
+  <div class="original">
+    <p>Original</p>
+    <pre><code class="plaintext" id="original-content">...</code></pre>
+
+  </div>
+  <div class="preview">
+    <p>Preview</p>
+    <pre><code class="plaintext" id="preview-content">...</code></pre>
+  </div>
+</div>
+<button id="button-format" class='button button--secondary'>Format</button>
+<button id="button-apply" class='button button--primary'>Apply</button>

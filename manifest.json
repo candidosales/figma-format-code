@@ -1,0 +1,7 @@
+{
+  "name": "Format Code",
+  "id": "891351519501239645",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
+}
