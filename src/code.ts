@@ -1,3 +1,4 @@
+import { Theme } from './interface';
 // This plugin will open a window to prompt the user to enter a number, and
 // it will then create that many rectangles on the screen.
 
@@ -8,22 +9,16 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, { width: 700, height: 480 });
 
-export interface ValidObject {
-  isValid: boolean;
-  message: any;
-}
-
 figma.ui.onmessage = (msg) => {
+
+  console.log('msg', msg);
+
   if (msg.type === 'start') {
     for (let node of figma.currentPage.selection) {
       if (node.type === 'TEXT') {
-        figma.ui.postMessage({ original: node.characters });
+        figma.ui.postMessage({ textCode: node.characters });
       }
     }
-  }
-
-  if (msg.type === 'apply') {
-    figma.closePlugin();
   }
 
   if (msg.type === 'notify') {
@@ -31,38 +26,59 @@ figma.ui.onmessage = (msg) => {
     figma.notify(message);
   }
 
-  if (msg.type === 'validate-code') {
-    for (let node of figma.currentPage.selection) {
-      if (node.type === 'TEXT') {
-        console.log('node characters length', node.characters.length);
-        console.log('node height', node.height);
-        console.log('node width', node.width);
-        console.log('node fills', node.fills);
-        console.log('node node.getRangeFills(3,5)', node.getRangeFills(3, 5));
-        console.log('node node.getRangeFills(8,11)', node.getRangeFills(8, 11));
+    if (msg.type === 'apply') {
+      console.log('apply-theme');
 
-        console.log(
-          'node node.getRangeFontName(3,5)',
-          node.getRangeFontName(3, 5)
-        );
-        console.log(
-          'node node.getRangeFontName(8,11)',
-          node.getRangeFontName(8, 11)
-        );
+      const theme = msg?.theme as Theme;
+      console.log('theme', theme);
 
-        console.log(
-          'node node.getRangeFontSize(3,5)',
-          node.getRangeFontSize(3, 5)
-        );
-        console.log(
-          'node node.getRangeFontSize(8,11)',
-          node.getRangeFontSize(8, 11)
-        );
-
-        figma.ui.postMessage({ original: node.characters });
+      if (theme) {
+        applyTheme(theme);
       }
     }
 
     figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection);
-  }
-};
+  };
+
+async function applyTheme(theme: Theme) {
+  const padding = 16;
+  const cornerRadius = 5;
+
+  await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+
+  const nodeText = figma.createText();
+  nodeText.characters = theme.contentHTML;
+  nodeText.fills = [{
+    blendMode: 'NORMAL',
+    color: theme.global.color,
+    opacity: 1,
+    type: 'SOLID',
+    visible: true,
+  }];
+
+  theme.nodePaints.forEach(nodePaint => {
+    nodeText.setRangeFills(nodePaint.range.start, nodePaint.range.end, [nodePaint.paint])
+  });
+
+  const nodeRectangle = figma.createRectangle();
+  nodeRectangle.fills = [{
+    blendMode: 'NORMAL',
+    color: theme.global.backgroundColor,
+    opacity: 1,
+    type: 'SOLID',
+    visible: true,
+  }];
+
+  nodeRectangle.cornerRadius = cornerRadius;
+  nodeRectangle.resize(nodeText.width + (padding*2), nodeText.height + (padding*2));
+
+  const nodeFrame = figma.createFrame();
+  nodeFrame.appendChild(nodeRectangle);
+  nodeFrame.appendChild(nodeText);
+
+  // Center node text
+  nodeText.x = nodeRectangle.x + padding;
+  nodeText.y = nodeRectangle.y + padding;
+
+  nodeFrame.resize(nodeText.width + (padding*2), nodeText.height + (padding*2));
+}
