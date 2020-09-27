@@ -6,16 +6,13 @@
 // full browser environment (see documentation).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 700, height: 520 });
+figma.showUI(__html__, { width: 700, height: 480 });
 
 export interface ValidObject {
   isValid: boolean;
   message: any;
 }
 
-// Calls to "parent.postMessage" from within the HTML page will trigger this
-// callback. The callback will be passed the "pluginMessage" property of the
-// posted message.
 figma.ui.onmessage = (msg) => {
   if (msg.type === 'start') {
     for (let node of figma.currentPage.selection) {
@@ -35,18 +32,32 @@ figma.ui.onmessage = (msg) => {
   }
 
   if (msg.type === 'validate-code') {
-    const format = msg.format;
-
     for (let node of figma.currentPage.selection) {
       if (node.type === 'TEXT') {
-        console.log('node', node);
-        console.log('node characters', node.characters);
-        console.log('node effects', node.effects);
+        console.log('node characters length', node.characters.length);
         console.log('node height', node.height);
         console.log('node width', node.width);
-        console.log('node strokes', node.strokes);
-        console.log('node textStyleId', node.textStyleId);
         console.log('node fills', node.fills);
+        console.log('node node.getRangeFills(3,5)', node.getRangeFills(3, 5));
+        console.log('node node.getRangeFills(8,11)', node.getRangeFills(8, 11));
+
+        console.log(
+          'node node.getRangeFontName(3,5)',
+          node.getRangeFontName(3, 5)
+        );
+        console.log(
+          'node node.getRangeFontName(8,11)',
+          node.getRangeFontName(8, 11)
+        );
+
+        console.log(
+          'node node.getRangeFontSize(3,5)',
+          node.getRangeFontSize(3, 5)
+        );
+        console.log(
+          'node node.getRangeFontSize(8,11)',
+          node.getRangeFontSize(8, 11)
+        );
 
         figma.ui.postMessage({ original: node.characters });
       }

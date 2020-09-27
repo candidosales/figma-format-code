@@ -2,14 +2,16 @@
 
 //// Highlight.js - Theme
 ////// Highlight.js - CSS
-@import './../node_modules/highlight.js/scss/default.scss';
+.theme__atom-one-dark {
+  @import './styles/highlight.js/_atom-one-dark';
+}
+
+.theme__default {
+  @import './styles/highlight.js/default';
+}
 
 .theme__dracula {
   @import './styles/highlight.js/dracula';
-}
-
-.theme__atom-one-dark {
-  @import './styles/highlight.js/_atom-one-dark';
 }
 
 /*Plugin specific CSS */
@@ -52,7 +54,7 @@ body {
 .original,
 .preview {
   width: 48.5%;
-  height: 370px;
+  height: 350px;
   pre {
     width: 100%;
     display: block;

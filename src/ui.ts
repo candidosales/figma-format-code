@@ -26,8 +26,9 @@ hljs.registerLanguage('markdown', hljsMarkdown);
 const compare = document.getElementById('compare');
 const originalContent = document.getElementById('original-content');
 const previewContent = document.getElementById('preview-content');
-let format,
-  theme = '';
+let format = (document.getElementById('select-format') as HTMLInputElement)
+  .value;
+let theme = (document.getElementById('select-theme') as HTMLInputElement).value;
 
 // Start
 
@@ -55,20 +56,14 @@ document.getElementById('button-apply').onclick = () => {
 };
 
 document.getElementById('button-format').onclick = () => {
-  format = (document.getElementById('select-format') as HTMLInputElement).value;
+  updateValues();
+
   parent.postMessage(
     {
-      pluginMessage: {
-        type: 'validate-code',
-        format: format,
-      },
+      pluginMessage: { type: 'validate-code' },
     },
     '*'
   );
-};
-
-document.getElementById('select-theme').onclick = () => {
-  theme = (document.getElementById('select-theme') as HTMLInputElement).value;
 };
 
 // Messages Code -> UI
@@ -83,8 +78,6 @@ onmessage = (event) => {
   }
 
   if (theme) {
-    console.log('theme', theme);
-
     compare.classList.forEach((className) => {
       if (className.startsWith('theme__')) {
         compare.classList.remove(className);
@@ -95,9 +88,12 @@ onmessage = (event) => {
   }
 };
 
-function formatCode(data: { format: string; code: string }) {
-  console.log('formatCode data', data);
+function updateValues() {
+  format = (document.getElementById('select-format') as HTMLInputElement).value;
+  theme = (document.getElementById('select-theme') as HTMLInputElement).value;
+}
 
+function formatCode(data: { format: string; code: string }) {
   if (data) {
     switch (data.format) {
       case 'javascript':
