@@ -16,6 +16,6 @@ export interface Theme {
 }
 
 export interface ThemeGlobal {
-    color: RGB;
-    backgroundColor: RGB;
+  color: RGB;
+  backgroundColor: RGB;
 }

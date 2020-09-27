@@ -10,7 +10,6 @@ import { Theme } from './interface';
 figma.showUI(__html__, { width: 700, height: 480 });
 
 figma.ui.onmessage = (msg) => {
-
   console.log('msg', msg);
 
   if (msg.type === 'start') {
@@ -26,51 +25,60 @@ figma.ui.onmessage = (msg) => {
     figma.notify(message);
   }
 
-    if (msg.type === 'apply') {
-      console.log('apply-theme');
+  if (msg.type === 'apply') {
+    console.log('apply-theme');
 
-      const theme = msg?.theme as Theme;
-      console.log('theme', theme);
+    const theme = msg?.theme as Theme;
+    console.log('theme', theme);
 
-      if (theme) {
-        applyTheme(theme);
-      }
+    if (theme) {
+      applyTheme(theme);
     }
+  }
 
-    figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection);
-  };
+  figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection);
+};
 
 async function applyTheme(theme: Theme) {
   const padding = 16;
   const cornerRadius = 5;
 
-  await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+  await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
 
   const nodeText = figma.createText();
   nodeText.characters = theme.contentHTML;
-  nodeText.fills = [{
-    blendMode: 'NORMAL',
-    color: theme.global.color,
-    opacity: 1,
-    type: 'SOLID',
-    visible: true,
-  }];
+  nodeText.fills = [
+    {
+      blendMode: 'NORMAL',
+      color: theme.global.color,
+      opacity: 1,
+      type: 'SOLID',
+      visible: true,
+    },
+  ];
 
-  theme.nodePaints.forEach(nodePaint => {
-    nodeText.setRangeFills(nodePaint.range.start, nodePaint.range.end, [nodePaint.paint])
+  theme.nodePaints.forEach((nodePaint) => {
+    nodeText.setRangeFills(nodePaint.range.start, nodePaint.range.end, [
+      nodePaint.paint,
+    ]);
   });
 
   const nodeRectangle = figma.createRectangle();
-  nodeRectangle.fills = [{
-    blendMode: 'NORMAL',
-    color: theme.global.backgroundColor,
-    opacity: 1,
-    type: 'SOLID',
-    visible: true,
-  }];
+  nodeRectangle.fills = [
+    {
+      blendMode: 'NORMAL',
+      color: theme.global.backgroundColor,
+      opacity: 1,
+      type: 'SOLID',
+      visible: true,
+    },
+  ];
 
   nodeRectangle.cornerRadius = cornerRadius;
-  nodeRectangle.resize(nodeText.width + (padding*2), nodeText.height + (padding*2));
+  nodeRectangle.resize(
+    nodeText.width + padding * 2,
+    nodeText.height + padding * 2
+  );
 
   const nodeFrame = figma.createFrame();
   nodeFrame.appendChild(nodeRectangle);
@@ -80,5 +88,7 @@ async function applyTheme(theme: Theme) {
   nodeText.x = nodeRectangle.x + padding;
   nodeText.y = nodeRectangle.y + padding;
 
-  nodeFrame.resize(nodeText.width + (padding*2), nodeText.height + (padding*2));
+  nodeFrame.resize(nodeText.width + padding * 2, nodeText.height + padding * 2);
+
+  figma.closePlugin();
 }

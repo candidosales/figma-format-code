@@ -60,7 +60,7 @@ $buttonApply.onclick = () => {
     {
       pluginMessage: {
         type: 'apply',
-        theme: appliedTheme
+        theme: appliedTheme,
       },
     },
     '*'
@@ -227,17 +227,19 @@ function applyTheme(): Theme {
     contentHTML: contentHTML,
     global: {
       color: calculateRGB(window.getComputedStyle(previewContent).color),
-      backgroundColor: calculateRGB(window.getComputedStyle(previewContent).backgroundColor)
-    }
+      backgroundColor: calculateRGB(
+        window.getComputedStyle(previewContent).backgroundColor
+      ),
+    },
   };
 }
 
 function calculateRGB(color: string): RGB {
-  const rgbColor = color.match(/\d+/g)
+  const rgbColor = color.match(/\d+/g);
   return {
-    r: parseInt(rgbColor[0])/255,
-    g: parseInt(rgbColor[1])/255,
-    b: parseInt(rgbColor[2])/255,
+    r: parseInt(rgbColor[0]) / 255,
+    g: parseInt(rgbColor[1]) / 255,
+    b: parseInt(rgbColor[2]) / 255,
   };
 }
 
