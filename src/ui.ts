@@ -85,13 +85,13 @@ onmessage = (event) => {
   if (theme) {
     console.log('theme', theme);
 
-    compare.classList.forEach(className => {
+    compare.classList.forEach((className) => {
       if (className.startsWith('theme__')) {
         compare.classList.remove(className);
       }
-    })
+    });
 
-    compare.classList.add(`theme__${theme}`)
+    compare.classList.add(`theme__${theme}`);
   }
 };
 
