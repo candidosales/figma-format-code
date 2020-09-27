@@ -10,8 +10,6 @@ import { Theme } from './interface';
 figma.showUI(__html__, { width: 700, height: 480 });
 
 figma.ui.onmessage = (msg) => {
-  console.log('msg', msg);
-
   if (msg.type === 'start') {
     for (let node of figma.currentPage.selection) {
       if (node.type === 'TEXT') {
@@ -26,11 +24,7 @@ figma.ui.onmessage = (msg) => {
   }
 
   if (msg.type === 'apply') {
-    console.log('apply-theme');
-
     const theme = msg?.theme as Theme;
-    console.log('theme', theme);
-
     if (theme) {
       applyTheme(theme);
     }

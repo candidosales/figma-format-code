@@ -54,8 +54,6 @@ formatHighlightCode();
 
 // Listeners
 $buttonApply.onclick = () => {
-  console.log('$buttonApply clicked');
-
   parent.postMessage(
     {
       pluginMessage: {
@@ -75,7 +73,6 @@ $buttonFormat.onclick = () => {
 // Messages Code -> UI
 onmessage = (event) => {
   let message = event.data.pluginMessage;
-  console.log('message', message);
   originalContent.innerHTML = message.textCode;
 };
 
@@ -172,13 +169,11 @@ function formatCode(data: { format: string; code: string }) {
 }
 
 function applyTheme(): Theme {
-  console.log('applyTheme');
-
   let contentHTML = previewContent.innerHTML;
   const allTags = previewContent.getElementsByTagName('span');
 
-  console.log('applyTheme contentHTML', contentHTML);
-  console.log('applyTheme innerText', previewContent.innerText);
+  // console.log('applyTheme contentHTML', contentHTML);
+  // console.log('applyTheme innerText', previewContent.innerText);
 
   // console.log('applyTheme all', allTags);
 
@@ -243,23 +238,23 @@ function calculateRGB(color: string): RGB {
   };
 }
 
-function test() {
-  const str = '  <span class="x">"abc"</span>';
-  console.log('str', str.length);
+// function test() {
+//   const str = '  <span class="x">"abc"</span>';
+//   console.log('str', str.length);
 
-  var temp = document.createElement('div');
-  temp.innerHTML = str;
+//   var temp = document.createElement('div');
+//   temp.innerHTML = str;
 
-  let contentHTML = temp.innerHTML;
+//   let contentHTML = temp.innerHTML;
 
-  var all = temp.getElementsByTagName('span');
-  console.log('all', all.length);
+//   var all = temp.getElementsByTagName('span');
+//   console.log('all', all.length);
 
-  const node = all[0];
-  const nodeContent = node.innerHTML;
+//   const node = all[0];
+//   const nodeContent = node.innerHTML;
 
-  const startIndex = contentHTML.indexOf(`<span class="${node.classList[0]}">`);
+//   const startIndex = contentHTML.indexOf(`<span class="${node.classList[0]}">`);
 
-  console.log('startIndex', startIndex);
-  console.log('lastIndex', startIndex + (nodeContent.length - 1));
-}
+//   console.log('startIndex', startIndex);
+//   console.log('lastIndex', startIndex + (nodeContent.length - 1));
+// }
