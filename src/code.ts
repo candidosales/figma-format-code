@@ -6,22 +6,20 @@
 // full browser environment (see documentation).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, {width: 700, height: 520 });
+figma.showUI(__html__, { width: 700, height: 520 });
 
 export interface ValidObject {
   isValid: boolean;
   message: any;
 }
 
-
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
-figma.ui.onmessage = msg => {
-
+figma.ui.onmessage = (msg) => {
   if (msg.type === 'start') {
     for (let node of figma.currentPage.selection) {
-      if (node.type === "TEXT") {
+      if (node.type === 'TEXT') {
         figma.ui.postMessage({ original: node.characters });
       }
     }
@@ -38,10 +36,9 @@ figma.ui.onmessage = msg => {
 
   if (msg.type === 'validate-code') {
     const format = msg.format;
-    
-    for (let node of figma.currentPage.selection) {
 
-      if (node.type === "TEXT") {
+    for (let node of figma.currentPage.selection) {
+      if (node.type === 'TEXT') {
         console.log('node', node);
         console.log('node characters', node.characters);
         console.log('node effects', node.effects);
@@ -51,10 +48,10 @@ figma.ui.onmessage = msg => {
         console.log('node textStyleId', node.textStyleId);
         console.log('node fills', node.fills);
 
-        figma.ui.postMessage({ original: node.characters })
+        figma.ui.postMessage({ original: node.characters });
       }
     }
 
     figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection);
-  }  
+  }
 };

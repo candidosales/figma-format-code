@@ -1,17 +1,11 @@
-import "./ui.scss";
+import './ui.scss';
 
 // Dependencies
 //// Prettier - Format
-import prettier from '../node_modules/prettier/standalone'
-import parserBabel from '../node_modules/prettier/parser-babel'
-import parserHtml from '../node_modules/prettier/parser-html'
-import parserMarkdown from '../node_modules/prettier/parser-markdown'
-
-//// Highlight.js - Theme
-////// Highlight.js - CSS
-import "../node_modules/highlight.js/styles/default.css";
-import "../node_modules/highlight.js/styles/dracula.css";
-import "../node_modules/highlight.js/styles/atom-one-dark.css";
+import prettier from '../node_modules/prettier/standalone';
+import parserBabel from '../node_modules/prettier/parser-babel';
+import parserHtml from '../node_modules/prettier/parser-html';
+import parserMarkdown from '../node_modules/prettier/parser-markdown';
 
 ////// Highlight.js - Core
 
@@ -27,13 +21,13 @@ hljs.registerLanguage('json', hljsJson);
 hljs.registerLanguage('html', hljsXml);
 hljs.registerLanguage('markdown', hljsMarkdown);
 
+// Variables
 
-// Variables 
-
-const originalContent = document.getElementById("original-content");
-const previewContent = document.getElementById("preview-content");
-let format, theme = '';
-
+const compare = document.getElementById('compare');
+const originalContent = document.getElementById('original-content');
+const previewContent = document.getElementById('preview-content');
+let format,
+  theme = '';
 
 // Start
 
@@ -42,39 +36,43 @@ hljs.initHighlightingOnLoad();
 parent.postMessage(
   {
     pluginMessage: {
-      type: "start",
+      type: 'start',
     },
   },
-  "*"
+  '*'
 );
 
 // Listeners
-document.getElementById("button-apply").onclick = () => {
+document.getElementById('button-apply').onclick = () => {
   parent.postMessage(
     {
       pluginMessage: {
-        type: "apply",
+        type: 'apply',
       },
     },
-    "*"
+    '*'
   );
 };
 
-document.getElementById("button-format").onclick = () => {
-  format = (document.getElementById("select-format") as HTMLInputElement).value;
+document.getElementById('button-format').onclick = () => {
+  format = (document.getElementById('select-format') as HTMLInputElement).value;
   parent.postMessage(
     {
       pluginMessage: {
-        type: "validate-code",
+        type: 'validate-code',
         format: format,
       },
     },
-    "*"
+    '*'
   );
 };
 
+document.getElementById('select-theme').onclick = () => {
+  theme = (document.getElementById('select-theme') as HTMLInputElement).value;
+};
+
 // Messages Code -> UI
-onmessage = event => {
+onmessage = (event) => {
   let message = event.data.pluginMessage;
 
   originalContent.innerHTML = message.original;
@@ -83,9 +81,21 @@ onmessage = event => {
     const codeFormated = formatCode({ format, code: message.original });
     previewContent.innerHTML = hljs.highlight(format, codeFormated).value;
   }
-}
 
-function formatCode(data: {format: string, code: string}) {
+  if (theme) {
+    console.log('theme', theme);
+
+    compare.classList.forEach(className => {
+      if (className.startsWith('theme__')) {
+        compare.classList.remove(className);
+      }
+    })
+
+    compare.classList.add(`theme__${theme}`)
+  }
+};
+
+function formatCode(data: { format: string; code: string }) {
   console.log('formatCode data', data);
 
   if (data) {
@@ -94,57 +104,57 @@ function formatCode(data: {format: string, code: string}) {
       case 'json':
         try {
           return prettier.format(data.code, {
-            parser: "json",
+            parser: 'json',
             plugins: [parserBabel],
           });
-        } catch(e) {
+        } catch (e) {
           parent.postMessage(
             {
               pluginMessage: {
-                type: "notify",
+                type: 'notify',
                 message: e.message,
               },
             },
-            "*"
+            '*'
           );
           return '';
         }
       case 'html':
         try {
           return prettier.format(data.code, {
-            parser: "html",
+            parser: 'html',
             plugins: [parserHtml],
           });
-        } catch(e) {
+        } catch (e) {
           parent.postMessage(
             {
               pluginMessage: {
-                type: "notify",
+                type: 'notify',
                 message: e.message,
               },
             },
-            "*"
+            '*'
           );
           return '';
         }
-        case 'markdown':
-          try {
-            return prettier.format(data.code, {
-              parser: "markdown",
-              plugins: [parserMarkdown],
-            });
-          } catch(e) {
-            parent.postMessage(
-              {
-                pluginMessage: {
-                  type: "notify",
-                  message: e.message,
-                },
+      case 'markdown':
+        try {
+          return prettier.format(data.code, {
+            parser: 'markdown',
+            plugins: [parserMarkdown],
+          });
+        } catch (e) {
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'notify',
+                message: e.message,
               },
-              "*"
-            );
-            return '';
-          }
+            },
+            '*'
+          );
+          return '';
+        }
       default:
         return '';
     }
