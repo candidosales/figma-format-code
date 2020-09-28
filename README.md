@@ -30,11 +30,27 @@ More features coming soon, including support for more languages and improvements
 - Vs 2015;
 - Xcode;
 
-## Reference
+## 📚 Reference
 
 - https://github.com/figma/plugin-samples
 - https://github.com/yuanqing/create-figma-plugin
 - https://github.com/highlightjs/highlight.js
 - https://github.com/thomas-lowry/themer
 - https://github.com/oriziv/figma-sass-less-plugin
-- Parsers: https://prettier.io/docs/en/options.html#parser
+- https://prettier.io/docs/en/options.html#parser
+
+## ☕ Supporters
+
+If you want to support Format Code, you can ☕ [**buy a coffee here**](https://buymeacoff.ee/candidosales)
+
+## ✨ Acknowledgment
+
+-
+
+## Author
+
+- Cândido Sales - [@candidosales](https://twitter.com/candidosales)
+
+## ⚠️ Copyright and license
+
+Code and documentation copyright 2020-2030 the [Authors](https://github.com/candidosales/figma-format-code/graphs/contributors) and Code released under the [MIT License](https://github.com/candidosales/figma-format-code/blob/master/LICENSE). Docs released under [Creative Commons](https://creativecommons.org/licenses/by/3.0/).
