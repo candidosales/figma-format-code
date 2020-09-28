@@ -2,6 +2,7 @@
   <div class="field">
     <label for="select-format">Choose the format:</label>
     <select name="select-format" id="select-format">
+      <option value="css">CSS</option>
       <option value="javascript">Javascript</option>
       <option value="json">JSON</option>
       <option value="html">HTML</option>
@@ -11,9 +12,20 @@
   <div class="field">
     <label for="select-theme">Choose the theme:</label>
     <select name="select-theme" id="select-theme">
+      <option value="a11y-dark">A 11 Y Dark</option>
+      <option value="a11y-light">A 11 Y Light</option>
       <option value="atom-one-dark">Atom One Dark</option>
-      <option value="default">Default</option>
+      <option value="atom-one-light">Atom One Light</option>
+      <option selected value="default">Default</option>
       <option value="dracula">Dracula</option>
+      <option value="ocean">Ocean</option>
+      <option value="paraiso-dark">Paraiso Dark</option>
+      <option value="paraiso-light">Paraiso Light</option>
+      <option value="solarized-dark">Solarized Dark</option>
+      <option value="solarized-light">Solarized Light</option>
+      <option value="vs">Vs</option>
+      <option value="vs2015">Vs 2015</option>
+      <option value="xcode">Xcode</option>
     </select>
   </div>
 </div>
@@ -30,5 +42,5 @@
     <pre><code id="preview-content"></code></pre>
   </div>
 </div>
-<button id="button-format" class="button button--secondary">Format</button>
+<button id="button-preview" class="button button--secondary">Preview</button>
 <button id="button-apply" class="button button--primary">Apply</button>

@@ -2,6 +2,7 @@ export interface NodePaint {
   content: string;
   range: NodePaintRange;
   paint: SolidPaint;
+  fontName: FontName;
 }
 
 export interface NodePaintRange {
@@ -10,6 +11,7 @@ export interface NodePaintRange {
 }
 
 export interface Theme {
+  format: string;
   nodePaints: Array<NodePaint>;
   contentHTML: string;
   global: ThemeGlobal;
@@ -18,4 +20,5 @@ export interface Theme {
 export interface ThemeGlobal {
   color: RGB;
   backgroundColor: RGB;
+  fontName: FontName;
 }

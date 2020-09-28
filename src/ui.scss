@@ -2,8 +2,21 @@
 
 //// Highlight.js - Theme
 ////// Highlight.js - CSS
+
+.theme__a11y-dark {
+  @import './styles/highlight.js/_a11y-dark';
+}
+
+.theme__a11y-light {
+  @import './styles/highlight.js/_a11y-light';
+}
+
 .theme__atom-one-dark {
   @import './styles/highlight.js/_atom-one-dark';
+}
+
+.theme__atom-one-light {
+  @import './styles/highlight.js/_atom-one-light';
 }
 
 .theme__default {
@@ -12,6 +25,38 @@
 
 .theme__dracula {
   @import './styles/highlight.js/dracula';
+}
+
+.theme__ocean {
+  @import './styles/highlight.js/ocean';
+}
+
+.theme__paraiso-dark {
+  @import './styles/highlight.js/paraiso-dark';
+}
+
+.theme__paraiso-light {
+  @import './styles/highlight.js/paraiso-light';
+}
+
+.theme__solarized-dark {
+  @import './styles/highlight.js/solarized-dark';
+}
+
+.theme__solarized-light {
+  @import './styles/highlight.js/solarized-light';
+}
+
+.theme__vs {
+  @import './styles/highlight.js/vs';
+}
+
+.theme__vs2015 {
+  @import './styles/highlight.js/vs2015';
+}
+
+.theme__xcode {
+  @import './styles/highlight.js/xcode';
 }
 
 /*Plugin specific CSS */

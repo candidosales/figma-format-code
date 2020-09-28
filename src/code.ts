@@ -38,6 +38,8 @@ async function applyTheme(theme: Theme) {
   const cornerRadius = 5;
 
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
+  await figma.loadFontAsync({ family: 'Roboto', style: 'Bold' });
+  // await figma.loadFontAsync({ family: 'monospace', style: 'Regular' });
 
   const nodeText = figma.createText();
   nodeText.characters = theme.contentHTML;
@@ -51,10 +53,21 @@ async function applyTheme(theme: Theme) {
     },
   ];
 
+  nodeText.fontName = theme.global.fontName;
+
   theme.nodePaints.forEach((nodePaint) => {
-    nodeText.setRangeFills(nodePaint.range.start, nodePaint.range.end, [
-      nodePaint.paint,
-    ]);
+    try {
+      nodeText.setRangeFills(nodePaint.range.start, nodePaint.range.end, [
+        nodePaint.paint,
+      ]);
+      nodeText.setRangeFontName(
+        nodePaint.range.start,
+        nodePaint.range.end,
+        nodePaint.fontName
+      );
+    } catch (e) {
+      console.warn(e.message);
+    }
   });
 
   const nodeRectangle = figma.createRectangle();
@@ -75,6 +88,7 @@ async function applyTheme(theme: Theme) {
   );
 
   const nodeFrame = figma.createFrame();
+  nodeFrame.name = theme.format;
   nodeFrame.appendChild(nodeRectangle);
   nodeFrame.appendChild(nodeText);
 

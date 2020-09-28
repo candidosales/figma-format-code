@@ -4,6 +4,7 @@ import './ui.scss';
 //// Prettier - Format
 import prettier from '../node_modules/prettier/standalone';
 import parserBabel from '../node_modules/prettier/parser-babel';
+import parserPostcss from '../node_modules/prettier/parser-postcss';
 import parserHtml from '../node_modules/prettier/parser-html';
 import parserMarkdown from '../node_modules/prettier/parser-markdown';
 
@@ -11,33 +12,42 @@ import parserMarkdown from '../node_modules/prettier/parser-markdown';
 
 import hljs from '../node_modules/highlight.js/lib/core'; // Reduce the footprint
 
+import hljsCSS from '../node_modules/highlight.js/lib/languages/css';
 import hljsJavascript from '../node_modules/highlight.js/lib/languages/javascript';
-import hljsJson from '../node_modules/highlight.js/lib/languages/json';
-import hljsXml from '../node_modules/highlight.js/lib/languages/xml';
+import hljsJSON from '../node_modules/highlight.js/lib/languages/json';
+import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
 import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
 import { NodePaint, Theme } from './interface';
 
-hljs.registerLanguage('javascript', hljsJavascript);
-hljs.registerLanguage('json', hljsJson);
-hljs.registerLanguage('html', hljsXml);
-hljs.registerLanguage('markdown', hljsMarkdown);
-
 // Variables
+const formatSupported = {
+  CSS: 'css',
+  JAVASCRIPT: 'javascript',
+  JSON: 'json',
+  HTML: 'html',
+  MARKDOWN: 'markdown',
+};
 
 const compare = document.getElementById('compare');
 const originalContent = document.getElementById('original-content');
 const previewContent = document.getElementById('preview-content');
 
 const $buttonApply = document.getElementById('button-apply');
-const $buttonFormat = document.getElementById('button-format');
+const $buttonPreview = document.getElementById('button-preview');
+const $selectFormat = document.getElementById('select-format');
+const $selectTheme = document.getElementById('select-theme');
 
-let format = (document.getElementById('select-format') as HTMLInputElement)
-  .value;
-let theme = (document.getElementById('select-theme') as HTMLInputElement).value;
+let format = ($selectFormat as HTMLInputElement).value;
+let theme = ($selectTheme as HTMLInputElement).value;
 
 let appliedTheme: Theme;
 
 // Start
+hljs.registerLanguage(formatSupported.CSS, hljsCSS);
+hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
+hljs.registerLanguage(formatSupported.JSON, hljsJSON);
+hljs.registerLanguage(formatSupported.HTML, hljsXML);
+hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
 
 hljs.initHighlightingOnLoad();
 
@@ -65,9 +75,14 @@ $buttonApply.onclick = () => {
   );
 };
 
-$buttonFormat.onclick = () => {
+$buttonPreview.onclick = () => {
   updateValues();
   formatHighlightCode();
+};
+
+$selectTheme.onchange = () => {
+  updateValues();
+  updateTheme();
 };
 
 // Messages Code -> UI
@@ -86,6 +101,13 @@ function formatHighlightCode() {
     previewContent.innerHTML = formattedCodeHighlightSintax;
   }
 
+  updateTheme();
+
+  appliedTheme = applyTheme();
+  // console.log('appliedTheme', appliedTheme);
+}
+
+function updateTheme() {
   if (theme) {
     compare.classList.forEach((className) => {
       if (className.startsWith('theme__')) {
@@ -95,8 +117,6 @@ function formatHighlightCode() {
 
     compare.classList.add(`theme__${theme}`);
   }
-
-  appliedTheme = applyTheme();
 }
 
 function updateValues() {
@@ -107,11 +127,29 @@ function updateValues() {
 function formatCode(data: { format: string; code: string }) {
   if (data) {
     switch (data.format) {
-      case 'javascript':
-      case 'json':
+      case formatSupported.CSS:
         try {
           return prettier.format(data.code, {
-            parser: 'json',
+            parser: formatSupported.CSS,
+            plugins: [parserPostcss],
+          });
+        } catch (e) {
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'notify',
+                message: e.message,
+              },
+            },
+            '*'
+          );
+          return '';
+        }
+      case formatSupported.JAVASCRIPT:
+      case formatSupported.JSON:
+        try {
+          return prettier.format(data.code, {
+            parser: formatSupported.JSON,
             plugins: [parserBabel],
           });
         } catch (e) {
@@ -126,10 +164,10 @@ function formatCode(data: { format: string; code: string }) {
           );
           return '';
         }
-      case 'html':
+      case formatSupported.HTML:
         try {
           return prettier.format(data.code, {
-            parser: 'html',
+            parser: formatSupported.HTML,
             plugins: [parserHtml],
           });
         } catch (e) {
@@ -144,10 +182,10 @@ function formatCode(data: { format: string; code: string }) {
           );
           return '';
         }
-      case 'markdown':
+      case formatSupported.MARKDOWN:
         try {
           return prettier.format(data.code, {
-            parser: 'markdown',
+            parser: formatSupported.MARKDOWN,
             plugins: [parserMarkdown],
           });
         } catch (e) {
@@ -172,7 +210,7 @@ function applyTheme(): Theme {
   let contentHTML = previewContent.innerHTML;
   const allTags = previewContent.getElementsByTagName('span');
 
-  // console.log('applyTheme contentHTML', contentHTML);
+  // console.log('previewContent contentHTML', contentHTML);
   // console.log('applyTheme innerText', previewContent.innerText);
 
   // console.log('applyTheme all', allTags);
@@ -183,11 +221,14 @@ function applyTheme(): Theme {
     // console.log('i', i);
 
     const node = allTags[i];
+    const selector = `<span class="${node.classList[0]}">`;
+    // console.log('selector', selector);
+
+    // TODO - Issue: Span Nested
+    // TODO - Verify if exist span nested, if yes, jump for the next item
 
     // Calculate the index position of the content inside the HTML
-    const startIndex = contentHTML.indexOf(
-      `<span class="${node.classList[0]}">`
-    );
+    const startIndex = contentHTML.indexOf(selector);
     const endIndex = startIndex + (node.innerHTML.length - 1);
 
     // Remove the HTML Tag
@@ -214,10 +255,23 @@ function applyTheme(): Theme {
         type: 'SOLID',
         visible: true,
       },
+      fontName: {
+        family: 'Roboto',
+        style: getFontStyle(window.getComputedStyle(node).fontWeight),
+      },
     });
   }
 
+  // console.log('contentHTML', contentHTML);
+
+  if (format === formatSupported.HTML) {
+    contentHTML = contentHTML.replace(/&lt;/gi, '<');
+    contentHTML = contentHTML.replace(/&gt;/gi, '>');
+    contentHTML = contentHTML.replace(/&amp;/gi, '&');
+  }
+
   return {
+    format,
     nodePaints: nodePaints,
     contentHTML: contentHTML,
     global: {
@@ -225,6 +279,10 @@ function applyTheme(): Theme {
       backgroundColor: calculateRGB(
         window.getComputedStyle(previewContent).backgroundColor
       ),
+      fontName: {
+        family: 'Roboto',
+        style: 'Regular',
+      },
     },
   };
 }
@@ -236,6 +294,20 @@ function calculateRGB(color: string): RGB {
     g: parseInt(rgbColor[1]) / 255,
     b: parseInt(rgbColor[2]) / 255,
   };
+}
+
+function getFontStyle(fontWeight: string): string {
+  if (fontWeight) {
+    switch (fontWeight) {
+      case '400':
+        return 'Regular';
+      case '700':
+        return 'Bold';
+      default:
+        return 'Regular';
+    }
+    return 'Regular';
+  }
 }
 
 // function test() {
