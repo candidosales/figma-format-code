@@ -6,6 +6,12 @@ Format Code makes it easy to format code snippets and add a theme for syntax hig
 
 More features coming soon, including support for more languages and improvements in usability.
 
+Design & Developed by Cândido Sales.
+
+## Preview
+
+![Imgur](https://imgur.com/gxSNaCB.gif)
+
 ## Languages supported
 
 - CSS;
