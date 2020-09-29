@@ -7,6 +7,7 @@ import parserBabel from '../node_modules/prettier/parser-babel';
 import parserPostcss from '../node_modules/prettier/parser-postcss';
 import parserHtml from '../node_modules/prettier/parser-html';
 import parserMarkdown from '../node_modules/prettier/parser-markdown';
+import parserTypescript from '../node_modules/prettier/parser-typescript';
 
 ////// Highlight.js - Core
 
@@ -17,6 +18,8 @@ import hljsJavascript from '../node_modules/highlight.js/lib/languages/javascrip
 import hljsJSON from '../node_modules/highlight.js/lib/languages/json';
 import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
 import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
+import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
+
 import { NodePaint, Theme } from './interface';
 
 // Variables
@@ -26,6 +29,7 @@ const formatSupported = {
   JSON: 'json',
   HTML: 'html',
   MARKDOWN: 'markdown',
+  TYPESCRIPT: 'typescript'
 };
 
 const compare = document.getElementById('compare');
@@ -48,6 +52,7 @@ hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
 hljs.registerLanguage(formatSupported.JSON, hljsJSON);
 hljs.registerLanguage(formatSupported.HTML, hljsXML);
 hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
+hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
 
 hljs.initHighlightingOnLoad();
 
@@ -96,7 +101,7 @@ function formatHighlightCode() {
     formattedCodeHighlightSintax = '';
 
   if (format) {
-    formattedCode = formatCode({ format, code: originalContent.innerHTML });
+    formattedCode = formatCode({ format, code: originalContent.textContent });
     formattedCodeHighlightSintax = hljs.highlight(format, formattedCode).value;
     previewContent.innerHTML = formattedCodeHighlightSintax;
   }
@@ -134,6 +139,7 @@ function formatCode(data: { format: string; code: string }) {
             plugins: [parserPostcss],
           });
         } catch (e) {
+          console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
             {
               pluginMessage: {
@@ -153,6 +159,7 @@ function formatCode(data: { format: string; code: string }) {
             plugins: [parserBabel],
           });
         } catch (e) {
+          console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
             {
               pluginMessage: {
@@ -171,6 +178,7 @@ function formatCode(data: { format: string; code: string }) {
             plugins: [parserHtml],
           });
         } catch (e) {
+          console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
             {
               pluginMessage: {
@@ -189,6 +197,7 @@ function formatCode(data: { format: string; code: string }) {
             plugins: [parserMarkdown],
           });
         } catch (e) {
+          console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
             {
               pluginMessage: {
@@ -200,6 +209,25 @@ function formatCode(data: { format: string; code: string }) {
           );
           return '';
         }
+        case formatSupported.TYPESCRIPT:
+          try {
+            return prettier.format(data.code, {
+              parser: formatSupported.TYPESCRIPT,
+              plugins: [parserTypescript],
+            });
+          } catch (e) {
+            console.warn('format', data.format, 'error', e.message);
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: 'notify',
+                  message: e.message,
+                },
+              },
+              '*'
+            );
+            return '';
+          }
       default:
         return '';
     }
@@ -207,10 +235,17 @@ function formatCode(data: { format: string; code: string }) {
 }
 
 function applyTheme(): Theme {
-  let contentHTML = previewContent.innerHTML;
-  const allTags = previewContent.getElementsByTagName('span');
 
-  // console.log('previewContent contentHTML', contentHTML);
+  if (format === formatSupported.HTML) {
+    clearHTMLContent(previewContent)
+  }
+
+  let contentHTML = previewContent.innerHTML;
+  let allTags = previewContent.getElementsByTagName('span');
+
+  
+
+  console.log('previewContent contentHTML', contentHTML);
   // console.log('applyTheme innerText', previewContent.innerText);
 
   // console.log('applyTheme all', allTags);
@@ -228,7 +263,7 @@ function applyTheme(): Theme {
     // TODO - Verify if exist span nested, if yes, jump for the next item
 
     // Calculate the index position of the content inside the HTML
-    const startIndex = contentHTML.indexOf(selector);
+    const startIndex = contentHTML.indexOf(selector) - (format === formatSupported.HTML ? 3 : 0);
     const endIndex = startIndex + (node.innerHTML.length - 1);
 
     // Remove the HTML Tag
@@ -308,6 +343,23 @@ function getFontStyle(fontWeight: string): string {
     }
     return 'Regular';
   }
+}
+
+function clearHTMLContent(htmlElement: HTMLElement) {
+  let hljsTags = htmlElement.getElementsByTagName('span');
+    console.log('format', format, 'hljsTags', hljsTags);
+    if (hljsTags.length > 0) {
+      for (let i = 0, max = hljsTags.length; i < max; i++) {
+        console.log('i', i, 'hljsTags[i]', hljsTags[i]);
+
+        if (hljsTags[i]) {
+          hljsTags[i].outerHTML = hljsTags[i].innerHTML;
+          continue;
+        }
+        
+        clearHTMLContent(htmlElement);
+      }
+    }
 }
 
 // function test() {
