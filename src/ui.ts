@@ -7,6 +7,7 @@ import parserBabel from '../node_modules/prettier/parser-babel';
 import parserPostcss from '../node_modules/prettier/parser-postcss';
 import parserHtml from '../node_modules/prettier/parser-html';
 import parserMarkdown from '../node_modules/prettier/parser-markdown';
+import parserTypescript from '../node_modules/prettier/parser-typescript';
 
 ////// Highlight.js - Core
 
@@ -17,7 +18,9 @@ import hljsJavascript from '../node_modules/highlight.js/lib/languages/javascrip
 import hljsJSON from '../node_modules/highlight.js/lib/languages/json';
 import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
 import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
-import { NodePaint, Theme } from './interface';
+import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
+
+import { NodePaint, Theme, FormatCode } from './interface';
 
 // Variables
 const formatSupported = {
@@ -26,11 +29,13 @@ const formatSupported = {
   JSON: 'json',
   HTML: 'html',
   MARKDOWN: 'markdown',
+  TYPESCRIPT: 'typescript',
 };
 
-const compare = document.getElementById('compare');
-const originalContent = document.getElementById('original-content');
-const previewContent = document.getElementById('preview-content');
+const $compare = document.getElementById('compare');
+const $originalContent = document.getElementById('original-content');
+const $originalError = document.getElementById('original-error');
+const $previewContent = document.getElementById('preview-content');
 
 const $buttonApply = document.getElementById('button-apply');
 const $buttonPreview = document.getElementById('button-preview');
@@ -48,6 +53,7 @@ hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
 hljs.registerLanguage(formatSupported.JSON, hljsJSON);
 hljs.registerLanguage(formatSupported.HTML, hljsXML);
 hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
+hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
 
 hljs.initHighlightingOnLoad();
 
@@ -83,22 +89,32 @@ $buttonPreview.onclick = () => {
 $selectTheme.onchange = () => {
   updateValues();
   updateTheme();
+  formatHighlightCode();
 };
 
 // Messages Code -> UI
 onmessage = (event) => {
   let message = event.data.pluginMessage;
-  originalContent.innerHTML = message.textCode;
+  $originalContent.innerHTML = message.textCode;
 };
 
 function formatHighlightCode() {
-  let formattedCode,
-    formattedCodeHighlightSintax = '';
+  let formattedCodeHighlightSintax = '';
 
   if (format) {
-    formattedCode = formatCode({ format, code: originalContent.innerHTML });
-    formattedCodeHighlightSintax = hljs.highlight(format, formattedCode).value;
-    previewContent.innerHTML = formattedCodeHighlightSintax;
+    const result = formatCode({ format, code: $originalContent.textContent });
+    console.log('result', result);
+
+    if (result.error !== '') {
+      showParserError(result.error);
+    }
+
+    if (result.formatCode !== '') {
+      formattedCodeHighlightSintax = hljs.highlight(format, result.formatCode)
+        .value;
+      $previewContent.innerHTML = formattedCodeHighlightSintax;
+      hideParserError();
+    }
   }
 
   updateTheme();
@@ -109,13 +125,13 @@ function formatHighlightCode() {
 
 function updateTheme() {
   if (theme) {
-    compare.classList.forEach((className) => {
+    $compare.classList.forEach((className) => {
       if (className.startsWith('theme__')) {
-        compare.classList.remove(className);
+        $compare.classList.remove(className);
       }
     });
 
-    compare.classList.add(`theme__${theme}`);
+    $compare.classList.add(`theme__${theme}`);
   }
 }
 
@@ -124,15 +140,18 @@ function updateValues() {
   theme = (document.getElementById('select-theme') as HTMLInputElement).value;
 }
 
-function formatCode(data: { format: string; code: string }) {
+function formatCode(data: { format: string; code: string }): FormatCode {
   if (data) {
     switch (data.format) {
       case formatSupported.CSS:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.CSS,
-            plugins: [parserPostcss],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.CSS,
+              plugins: [parserPostcss],
+            }),
+            error: '',
+          };
         } catch (e) {
           parent.postMessage(
             {
@@ -143,15 +162,21 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message,
+          };
         }
       case formatSupported.JAVASCRIPT:
       case formatSupported.JSON:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.JSON,
-            plugins: [parserBabel],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.JSON,
+              plugins: [parserBabel],
+            }),
+            error: '',
+          };
         } catch (e) {
           parent.postMessage(
             {
@@ -162,14 +187,20 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message,
+          };
         }
       case formatSupported.HTML:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.HTML,
-            plugins: [parserHtml],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.HTML,
+              plugins: [parserHtml],
+            }),
+            error: '',
+          };
         } catch (e) {
           parent.postMessage(
             {
@@ -180,14 +211,20 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message,
+          };
         }
       case formatSupported.MARKDOWN:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.MARKDOWN,
-            plugins: [parserMarkdown],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.MARKDOWN,
+              plugins: [parserMarkdown],
+            }),
+            error: '',
+          };
         } catch (e) {
           parent.postMessage(
             {
@@ -198,17 +235,65 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message,
+          };
+        }
+      case formatSupported.TYPESCRIPT:
+        try {
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.TYPESCRIPT,
+              plugins: [parserTypescript],
+            }),
+            error: '',
+          };
+        } catch (e) {
+          console.warn('format', data.format, 'error', e.message);
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'notify',
+                message: e.message,
+              },
+            },
+            '*'
+          );
+          return {
+            formatCode: '',
+            error: e.message,
+          };
         }
       default:
-        return '';
+        return {
+          formatCode: '',
+          error: '',
+        };
     }
   }
 }
 
+function showParserError(errorMessage: string): void {
+  const code = $originalError.getElementsByTagName('code');
+  code[0].innerHTML = errorMessage;
+  code[0].classList.remove('hljs');
+
+  $originalError.classList.add('show-error');
+}
+
+function hideParserError(): void {
+  const code = $originalError.getElementsByTagName('code');
+  code[0].innerHTML = '';
+  $originalError.classList.remove('show-error');
+}
+
 function applyTheme(): Theme {
-  let contentHTML = previewContent.innerHTML;
-  const allTags = previewContent.getElementsByTagName('span');
+  // console.log('$previewContent.innerHTML', $previewContent.innerHTML);
+  // console.log('$previewContent.textContent', $previewContent.textContent);
+
+  let contentHTML = $previewContent.innerHTML;
+  const allTags = $previewContent.getElementsByTagName('span');
 
   // console.log('previewContent contentHTML', contentHTML);
   // console.log('applyTheme innerText', previewContent.innerText);
@@ -275,9 +360,9 @@ function applyTheme(): Theme {
     nodePaints: nodePaints,
     contentHTML: contentHTML,
     global: {
-      color: calculateRGB(window.getComputedStyle(previewContent).color),
+      color: calculateRGB(window.getComputedStyle($previewContent).color),
       backgroundColor: calculateRGB(
-        window.getComputedStyle(previewContent).backgroundColor
+        window.getComputedStyle($previewContent).backgroundColor
       ),
       fontName: {
         family: 'Roboto',

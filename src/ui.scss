@@ -59,6 +59,10 @@
   @import './styles/highlight.js/xcode';
 }
 
+/*Variables*/
+
+$global-gutter: 16px;
+
 /*Plugin specific CSS */
 html,
 body {
@@ -71,29 +75,69 @@ body {
 }
 
 body {
-  padding: 16px;
+  padding: $global-gutter;
+}
+
+button {
+  cursor: pointer;
+}
+
+.divider {
+  margin: $global-gutter 0;
+}
+.form {
+  display: flex;
+  flex-direction: row;
+
+  select {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem 1.75rem .375rem .75rem;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    vertical-align: middle;
+    background-color: #fff;
+    background-image: url(./assets/arrow-down.svg);
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: $global-gutter 12px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
 }
 
 .field {
+  margin-right: $global-gutter;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   label {
     color: rgba(0, 0, 0, 0.8);
     font-weight: 600;
     font-size: 11px;
     line-height: 16px;
+    width: 200px;
   }
 }
 
 .compare {
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 .original {
-  margin-right: 8px;
+  margin-right: $global-gutter/2;;
 }
 
 .preview {
-  margin-left: 8px;
+  margin-left: $global-gutter/2;;
 }
 
 .original,
@@ -120,4 +164,32 @@ body {
   width: 100%;
   height: 300px;
   overflow: auto;
+}
+
+#original-error {
+  background: #fff3cd;
+  color: #856404;
+  position: absolute;
+  bottom: 0px;
+  overflow: auto;
+  width: 100%;
+  box-shadow: 0px -3px 1px -2px rgba(0,0,0,.2), 0px -2px 2px 0 rgba(0,0,0,.14), 0 1px 6px 0 rgba(0,0,0,.12);
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-color: #ffeeba;
+  opacity: 0;
+  display:none;
+  &.show-error {
+    opacity: 1;
+    bottom: 20px;
+    transition: all 0.3s ease-in-out;
+    display: inline;
+  }
+  pre {
+    margin: 0;
+  }
+  code {
+    display: block;
+    margin: $global-gutter;
+  }
 }
