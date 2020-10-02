@@ -18,6 +18,7 @@ Design & Developed by Cândido Sales.
 - HTML;
 - Javascript;
 - JSON;
+- Typescript;
 
 ## Themes supported
 
