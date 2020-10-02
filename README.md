@@ -10,7 +10,7 @@ Design & Developed by Cândido Sales.
 
 ## Preview
 
-![Imgur](https://imgur.com/gxSNaCB.gif)
+![Imgur](https://i.imgur.com/r8x5VZt.gif)
 
 ## Languages supported
 
