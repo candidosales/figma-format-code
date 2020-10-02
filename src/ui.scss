@@ -77,6 +77,11 @@ body {
 body {
   padding: $global-gutter;
 }
+
+button {
+  cursor: pointer;
+}
+
 .divider {
   margin: $global-gutter 0;
 }
@@ -173,10 +178,12 @@ body {
   border-top-left-radius: 5px;
   border-color: #ffeeba;
   opacity: 0;
+  display:none;
   &.show-error {
     opacity: 1;
     bottom: 20px;
     transition: all 0.3s ease-in-out;
+    display: inline;
   }
   pre {
     margin: 0;
