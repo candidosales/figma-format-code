@@ -20,7 +20,7 @@ import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
 import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
 import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
 
-import { NodePaint, Theme } from './interface';
+import { NodePaint, Theme, FormatCode } from './interface';
 
 // Variables
 const formatSupported = {
@@ -32,9 +32,10 @@ const formatSupported = {
   TYPESCRIPT: 'typescript'
 };
 
-const compare = document.getElementById('compare');
-const originalContent = document.getElementById('original-content');
-const previewContent = document.getElementById('preview-content');
+const $compare = document.getElementById('compare');
+const $originalContent = document.getElementById('original-content');
+const $originalError = document.getElementById('original-error');
+const $previewContent = document.getElementById('preview-content');
 
 const $buttonApply = document.getElementById('button-apply');
 const $buttonPreview = document.getElementById('button-preview');
@@ -93,7 +94,7 @@ $selectTheme.onchange = () => {
 // Messages Code -> UI
 onmessage = (event) => {
   let message = event.data.pluginMessage;
-  originalContent.innerHTML = message.textCode;
+  $originalContent.innerHTML = message.textCode;
 };
 
 function formatHighlightCode() {
@@ -101,9 +102,18 @@ function formatHighlightCode() {
     formattedCodeHighlightSintax = '';
 
   if (format) {
-    formattedCode = formatCode({ format, code: originalContent.textContent });
-    formattedCodeHighlightSintax = hljs.highlight(format, formattedCode).value;
-    previewContent.innerHTML = formattedCodeHighlightSintax;
+    // formattedCode = formatCode({ format, code: originalContent.textContent });
+
+    const result = formatCode({ format, code: $originalContent.textContent });
+
+    if (result.error !== '') {
+      showParserError(result.error);
+    }
+
+    if (result.formatCode !== '') {
+      formattedCodeHighlightSintax = hljs.highlight(format, formattedCode).value;
+      $previewContent.innerHTML = formattedCodeHighlightSintax;
+    }    
   }
 
   updateTheme();
@@ -114,13 +124,13 @@ function formatHighlightCode() {
 
 function updateTheme() {
   if (theme) {
-    compare.classList.forEach((className) => {
+    $compare.classList.forEach((className) => {
       if (className.startsWith('theme__')) {
-        compare.classList.remove(className);
+        $compare.classList.remove(className);
       }
     });
 
-    compare.classList.add(`theme__${theme}`);
+    $compare.classList.add(`theme__${theme}`);
   }
 }
 
@@ -129,15 +139,18 @@ function updateValues() {
   theme = (document.getElementById('select-theme') as HTMLInputElement).value;
 }
 
-function formatCode(data: { format: string; code: string }) {
+function formatCode(data: { format: string; code: string }): FormatCode {
   if (data) {
     switch (data.format) {
       case formatSupported.CSS:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.CSS,
-            plugins: [parserPostcss],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+                parser: formatSupported.CSS,
+                plugins: [parserPostcss],
+              }),
+            error: ''
+           }
         } catch (e) {
           console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
@@ -149,15 +162,21 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message
+          };
         }
       case formatSupported.JAVASCRIPT:
       case formatSupported.JSON:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.JSON,
-            plugins: [parserBabel],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.JSON,
+              plugins: [parserBabel],
+            }),
+            error: ''
+           }
         } catch (e) {
           console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
@@ -169,14 +188,20 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message
+          };
         }
       case formatSupported.HTML:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.HTML,
-            plugins: [parserHtml],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.HTML,
+              plugins: [parserHtml],
+            }),
+            error: ''
+           }
         } catch (e) {
           console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
@@ -188,14 +213,20 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message
+          };
         }
       case formatSupported.MARKDOWN:
         try {
-          return prettier.format(data.code, {
-            parser: formatSupported.MARKDOWN,
-            plugins: [parserMarkdown],
-          });
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.MARKDOWN,
+              plugins: [parserMarkdown],
+            }),
+            error: ''
+           }
         } catch (e) {
           console.warn('format', data.format, 'error', e.message);
           parent.postMessage(
@@ -207,14 +238,20 @@ function formatCode(data: { format: string; code: string }) {
             },
             '*'
           );
-          return '';
+          return {
+            formatCode: '',
+            error: e.message
+          };
         }
         case formatSupported.TYPESCRIPT:
           try {
-            return prettier.format(data.code, {
-              parser: formatSupported.TYPESCRIPT,
-              plugins: [parserTypescript],
-            });
+            return {
+              formatCode: prettier.format(data.code, {
+                parser: formatSupported.TYPESCRIPT,
+                plugins: [parserTypescript],
+              }),
+              error: ''
+             }
           } catch (e) {
             console.warn('format', data.format, 'error', e.message);
             parent.postMessage(
@@ -226,22 +263,39 @@ function formatCode(data: { format: string; code: string }) {
               },
               '*'
             );
-            return '';
+            return {
+              formatCode: '',
+              error: e.message
+            };
           }
       default:
-        return '';
+        return {
+          formatCode: '',
+          error: ''
+        };
     }
   }
 }
 
+function showParserError(errorMessage: string) {
+  const code = $originalError.getElementsByTagName('code');
+  code[0].innerHTML = errorMessage;
+  code[0].classList.remove('hljs');
+
+  $originalError.classList.add('show-error');
+}
+
 function applyTheme(): Theme {
 
+  console.log('previewContent.innerHTML', $previewContent.innerHTML);
+  console.log('previewContent.textContent', $previewContent.textContent);
+
   if (format === formatSupported.HTML) {
-    clearHTMLContent(previewContent)
+    clearHTMLContent($previewContent)
   }
 
-  let contentHTML = previewContent.innerHTML;
-  let allTags = previewContent.getElementsByTagName('span');
+  let contentHTML = $previewContent.innerHTML;
+  let allTags = $previewContent.getElementsByTagName('span');
 
   
 
@@ -310,9 +364,9 @@ function applyTheme(): Theme {
     nodePaints: nodePaints,
     contentHTML: contentHTML,
     global: {
-      color: calculateRGB(window.getComputedStyle(previewContent).color),
+      color: calculateRGB(window.getComputedStyle($previewContent).color),
       backgroundColor: calculateRGB(
-        window.getComputedStyle(previewContent).backgroundColor
+        window.getComputedStyle($previewContent).backgroundColor
       ),
       fontName: {
         family: 'Roboto',

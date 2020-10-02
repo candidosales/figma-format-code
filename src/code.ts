@@ -7,7 +7,7 @@ import { Theme } from './interface';
 // full browser environment (see documentation).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__, { width: 700, height: 480 });
+figma.showUI(__html__, { width: 700, height: 780 });
 
 figma.ui.onmessage = (msg) => {
   if (msg.type === 'start') {
