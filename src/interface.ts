@@ -22,3 +22,8 @@ export interface ThemeGlobal {
   backgroundColor: RGB;
   fontName: FontName;
 }
+
+export interface FormatCode {
+  formatCode: string;
+  error: string;
+}
