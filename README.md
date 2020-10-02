@@ -2,7 +2,7 @@
 
 # Format Code
 
-A Figma plugin designed to allow you to format and syntax highlighting code.
+Format Code makes it easy to format code snippets and add a theme for syntax highlight
 
 More features coming soon, including support for more languages and improvements in usability.
 
@@ -45,6 +45,15 @@ Design & Developed by Cândido Sales.
 - https://github.com/thomas-lowry/themer
 - https://github.com/oriziv/figma-sass-less-plugin
 - https://prettier.io/docs/en/options.html#parser
+
+## 👍 Contribute
+
+If you want to say thank you and/or support the active development this project:
+
+1. Add a [GitHub Star](https://github.com/candidosales/figma-format-code/stargazers) to the project.
+2. Tweet about the project [on your Twitter](https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2Fcandidosales%2Ffigma-format-code%20&via=candidosales&text=A%20Figma%20plugin%20designed%20to%20allow%20you%20to%20format%20and%20syntax%20highlighting%20code).
+3. Write a review or tutorial on [Medium](https://medium.com/), [Dev.to](https://dev.to/) or personal blog.
+4. Support the project by donating a [cup of coffee](https://buymeacoff.ee/candidosales).
 
 ## ☕ Supporters
 
