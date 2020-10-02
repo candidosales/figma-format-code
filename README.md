@@ -2,7 +2,7 @@
 
 # Format Code
 
-Format Code makes it easy to format code snippets and add a theme for syntax highlight
+A Figma plugin designed to allow you to format and syntax highlighting code.
 
 More features coming soon, including support for more languages and improvements in usability.
 
