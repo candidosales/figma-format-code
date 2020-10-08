@@ -8,6 +8,7 @@ import parserPostcss from '../node_modules/prettier/parser-postcss';
 import parserHtml from '../node_modules/prettier/parser-html';
 import parserMarkdown from '../node_modules/prettier/parser-markdown';
 import parserTypescript from '../node_modules/prettier/parser-typescript';
+import parserYaml from '../node_modules/prettier/parser-yaml';
 
 ////// Highlight.js - Core
 
@@ -16,9 +17,12 @@ import hljs from '../node_modules/highlight.js/lib/core'; // Reduce the footprin
 import hljsCSS from '../node_modules/highlight.js/lib/languages/css';
 import hljsJavascript from '../node_modules/highlight.js/lib/languages/javascript';
 import hljsJSON from '../node_modules/highlight.js/lib/languages/json';
-import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
 import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
+import hljsLess from '../node_modules/highlight.js/lib/languages/less';
+import hljsSCSS from '../node_modules/highlight.js/lib/languages/scss';
 import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
+import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
+import hljsYAML from '../node_modules/highlight.js/lib/languages/yaml';
 
 import { NodePaint, Theme, FormatCode } from './interface';
 
@@ -28,8 +32,11 @@ const formatSupported = {
   JAVASCRIPT: 'javascript',
   JSON: 'json',
   HTML: 'html',
+  LESS: 'less',
   MARKDOWN: 'markdown',
+  SCSS: 'scss',
   TYPESCRIPT: 'typescript',
+  YAML: 'yaml',
 };
 
 const $compare = document.getElementById('compare');
@@ -48,11 +55,20 @@ let theme = ($selectTheme as HTMLInputElement).value;
 let appliedTheme: Theme;
 
 // Start
-hljs.registerLanguage(formatSupported.CSS, hljsCSS);
-hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
+
+// Common
 hljs.registerLanguage(formatSupported.JSON, hljsJSON);
-hljs.registerLanguage(formatSupported.HTML, hljsXML);
 hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
+hljs.registerLanguage(formatSupported.HTML, hljsXML);
+hljs.registerLanguage(formatSupported.YAML, hljsYAML);
+
+// CSS
+hljs.registerLanguage(formatSupported.CSS, hljsCSS);
+hljs.registerLanguage(formatSupported.LESS, hljsLess);
+hljs.registerLanguage(formatSupported.SCSS, hljsSCSS);
+
+// Scripting
+hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
 hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
 
 hljs.initHighlightingOnLoad();
@@ -103,7 +119,7 @@ function formatHighlightCode() {
 
   if (format) {
     const result = formatCode({ format, code: $originalContent.textContent });
-    console.log('result', result);
+    // console.log('result', result);
 
     if (result.error !== '') {
       showParserError(result.error);
@@ -141,9 +157,13 @@ function updateValues() {
 }
 
 function formatCode(data: { format: string; code: string }): FormatCode {
+  // console.log('formatCode data', data);
+
   if (data) {
     switch (data.format) {
       case formatSupported.CSS:
+      case formatSupported.LESS:
+      case formatSupported.SCSS:
         try {
           return {
             formatCode: prettier.format(data.code, {
@@ -246,6 +266,31 @@ function formatCode(data: { format: string; code: string }): FormatCode {
             formatCode: prettier.format(data.code, {
               parser: formatSupported.TYPESCRIPT,
               plugins: [parserTypescript],
+            }),
+            error: '',
+          };
+        } catch (e) {
+          console.warn('format', data.format, 'error', e.message);
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'notify',
+                message: e.message,
+              },
+            },
+            '*'
+          );
+          return {
+            formatCode: '',
+            error: e.message,
+          };
+        }
+      case formatSupported.YAML:
+        try {
+          return {
+            formatCode: prettier.format(data.code, {
+              parser: formatSupported.YAML,
+              plugins: [parserYaml],
             }),
             error: '',
           };
