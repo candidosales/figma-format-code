@@ -71,8 +71,6 @@ hljs.registerLanguage(formatSupported.SCSS, hljsSCSS);
 hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
 hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
 
-
-
 hljs.initHighlightingOnLoad();
 
 parent.postMessage(

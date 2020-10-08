@@ -96,7 +96,6 @@ async function applyTheme(theme: Theme) {
 
   nodeFrame.resize(nodeText.width + padding * 2, nodeText.height + padding * 2);
 
-
   figma.viewport.scrollAndZoomIntoView([nodeFrame]);
   figma.closePlugin();
 }
