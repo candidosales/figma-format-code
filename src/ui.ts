@@ -119,7 +119,7 @@ function formatHighlightCode() {
 
   if (format) {
     const result = formatCode({ format, code: $originalContent.textContent });
-    console.log('result', result);
+    // console.log('result', result);
 
     if (result.error !== '') {
       showParserError(result.error);
@@ -157,7 +157,7 @@ function updateValues() {
 }
 
 function formatCode(data: { format: string; code: string }): FormatCode {
-  console.log('formatCode data', data);
+  // console.log('formatCode data', data);
 
   if (data) {
     switch (data.format) {
