@@ -29,8 +29,6 @@ figma.ui.onmessage = (msg) => {
       applyTheme(theme);
     }
   }
-
-  figma.viewport.scrollAndZoomIntoView(figma.currentPage.selection);
 };
 
 async function applyTheme(theme: Theme) {
@@ -98,5 +96,7 @@ async function applyTheme(theme: Theme) {
 
   nodeFrame.resize(nodeText.width + padding * 2, nodeText.height + padding * 2);
 
+
+  figma.viewport.scrollAndZoomIntoView([nodeFrame]);
   figma.closePlugin();
 }

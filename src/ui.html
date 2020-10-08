@@ -2,12 +2,21 @@
   <div class="field">
     <label for="select-format">Choose the format:</label>
     <select name="select-format" id="select-format">
-      <option value="css">CSS</option>
-      <option value="javascript">Javascript</option>
-      <option value="json">JSON</option>
-      <option value="html">HTML</option>
-      <option value="markdown">Markdown</option>
-      <option value="typescript">Typescript</option>
+      <optgroup label="Common">
+        <option value="json">JSON</option>
+        <option value="html">HTML</option>
+        <option value="markdown">Markdown</option>
+        <option value="yaml">YAML</option>
+      </optgroup>
+      <optgroup label="CSS">
+        <option value="css">CSS</option>
+        <option value="less">Less</option>
+        <option value="scss">SCSS</option>
+      </optgroup>
+      <optgroup label="Scripting">
+        <option value="javascript">Javascript</option>
+        <option value="typescript">Typescript</option>
+      </optgroup>
     </select>
   </div>
   <div class="field">
