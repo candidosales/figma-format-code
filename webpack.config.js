@@ -19,10 +19,10 @@ module.exports = (env, argv) => ({
     path: path.resolve(__dirname, 'dist'), // Compile into a folder called "dist"
   },
 
-  optimization: {
-    minimizer: undefined,
-    minimize: false
-  },
+  // optimization: {
+  //   minimizer: undefined,
+  //   minimize: argv.mode === 'production' ? true : false
+  // },
 
   // Webpack tries these extensions for you if you omit the extension like "import './file'"
   resolve: { 
