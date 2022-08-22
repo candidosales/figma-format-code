@@ -21,6 +21,11 @@ import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
 import hljsLess from '../node_modules/highlight.js/lib/languages/less';
 import hljsSCSS from '../node_modules/highlight.js/lib/languages/scss';
 import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
+import hljsKotlin from '../node_modules/highlight.js/lib/languages/kotlin';
+import hljsJava from '../node_modules/highlight.js/lib/languages/java';
+import hljsGo from '../node_modules/highlight.js/lib/languages/go';
+import hljsPython from '../node_modules/highlight.js/lib/languages/python';
+import hljsRuby from '../node_modules/highlight.js/lib/languages/ruby';
 import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
 import hljsYAML from '../node_modules/highlight.js/lib/languages/yaml';
 
@@ -29,11 +34,16 @@ import { NodePaint, Theme, FormatCode } from './interface';
 // Variables
 const formatSupported = {
   CSS: 'css',
+  GO: 'go',
+  JAVA: 'java',
   JAVASCRIPT: 'javascript',
   JSON: 'json',
   HTML: 'html',
+  KOTLIN: 'kotlin',
   LESS: 'less',
   MARKDOWN: 'markdown',
+  PYTHON: 'python',
+  RUBY: 'ruby',
   SCSS: 'scss',
   TYPESCRIPT: 'typescript',
   YAML: 'yaml',
@@ -68,10 +78,15 @@ hljs.registerLanguage(formatSupported.LESS, hljsLess);
 hljs.registerLanguage(formatSupported.SCSS, hljsSCSS);
 
 // Scripting
+hljs.registerLanguage(formatSupported.GO, hljsGo);
+hljs.registerLanguage(formatSupported.JAVA, hljsJava);
 hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
 hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
+hljs.registerLanguage(formatSupported.KOTLIN, hljsKotlin);
+hljs.registerLanguage(formatSupported.PYTHON, hljsPython);
+hljs.registerLanguage(formatSupported.RUBY, hljsRuby);
 
-hljs.initHighlightingOnLoad();
+hljs.highlightAll();
 
 parent.postMessage(
   {
@@ -118,16 +133,22 @@ function formatHighlightCode() {
   let formattedCodeHighlightSintax = '';
 
   if (format) {
-    const result = formatCode({ format, code: $originalContent.textContent });
-    // console.log('result', result);
+    let result = {
+      formatCode: $originalContent.textContent,
+      error: null,
+    };
+    if (format !== formatSupported.HTML) {
+      result = formatCode({ format, code: $originalContent.textContent });
+    }
 
     if (result.error !== '') {
       showParserError(result.error);
     }
 
     if (result.formatCode !== '') {
-      formattedCodeHighlightSintax = hljs.highlight(format, result.formatCode)
-        .value;
+      formattedCodeHighlightSintax = hljs.highlight(result.formatCode, {
+        language: format,
+      }).value;
       $previewContent.innerHTML = formattedCodeHighlightSintax;
       hideParserError();
     }
@@ -312,7 +333,7 @@ function formatCode(data: { format: string; code: string }): FormatCode {
         }
       default:
         return {
-          formatCode: '',
+          formatCode: data.code,
           error: '',
         };
     }
@@ -394,11 +415,12 @@ function applyTheme(): Theme {
 
   // console.log('contentHTML', contentHTML);
 
-  if (format === formatSupported.HTML) {
-    contentHTML = contentHTML.replace(/&lt;/gi, '<');
-    contentHTML = contentHTML.replace(/&gt;/gi, '>');
-    contentHTML = contentHTML.replace(/&amp;/gi, '&');
-  }
+  // HTML handle
+  // if (format === formatSupported.HTML) {
+  //   contentHTML = contentHTML.replace(/&lt;/gi, '<');
+  //   contentHTML = contentHTML.replace(/&gt;/gi, '>');
+  //   contentHTML = contentHTML.replace(/&amp;/gi, '&');
+  // }
 
   return {
     format,

@@ -37,6 +37,7 @@ async function applyTheme(theme: Theme) {
 
   await figma.loadFontAsync({ family: 'Roboto', style: 'Regular' });
   await figma.loadFontAsync({ family: 'Roboto', style: 'Bold' });
+  await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
   // await figma.loadFontAsync({ family: 'monospace', style: 'Regular' });
 
   const nodeText = figma.createText();
