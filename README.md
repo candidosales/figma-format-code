@@ -1,4 +1,4 @@
-![Format Code promo image](assets/cover.png?raw=true 'Format Code promo')
+![Format Code promo image](assets/cover-github.png?raw=true 'Format Code promo')
 
 # Format Code
 
