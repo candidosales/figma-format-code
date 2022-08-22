@@ -133,13 +133,7 @@ function formatHighlightCode() {
   let formattedCodeHighlightSintax = '';
 
   if (format) {
-    let result = {
-      formatCode: $originalContent.textContent,
-      error: null,
-    };
-    if (format !== formatSupported.HTML) {
-      result = formatCode({ format, code: $originalContent.textContent });
-    }
+    const result = formatCode({ format, code: $originalContent.textContent });
 
     if (result.error !== '') {
       showParserError(result.error);
