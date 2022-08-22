@@ -1,8 +1,14 @@
 # CHANGELOG
 
+## [1.3.2] - 2022-08-21
+
+### Added
+
+- Added support to Figjam;
+
 ## [1.3.1] - 2022-08-21
 
-## Changed
+### Changed
 
 - Buttons position;
 
@@ -21,7 +27,7 @@
   - Monokai Sublime;
   - XT 256;
 
-## Changed
+### Changed
 
 - Upgrade libraries;
 
@@ -31,7 +37,7 @@
 
 - Add support to Less, SCSS and YAML;
 
-## Changed
+### Changed
 
 - Upgrade libraries;
 - Improve the select to choose the language;
@@ -43,7 +49,7 @@
 
 - Add support to Typescript;
 
-## Changed
+### Changed
 
 - Show parsers errors on the UI;
 - Improve the selects;
