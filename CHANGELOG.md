@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.3.1] - 2022-08-21
+
+## Changed
+
+- Buttons position;
+
 ## [1.3.0] - 2022-08-21
 
 ### Added
