@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## [1.3.0] - 2022-08-21
+
+### Added
+
+- Added support to Go, Java, Kotlin, Python and Ruby;
+- Added new 8 themes:
+  - Android Studio;
+  - Github;
+  - Github Dark;
+  - Material;
+  - Material Darker;
+  - Material Palenight;
+  - Monokai Sublime;
+  - XT 256;
+
+## Changed
+
+- Upgrade libraries;
+
 ## [1.2.0] - 2020-10-07
 
 ### Added
@@ -11,7 +30,6 @@
 - Upgrade libraries;
 - Improve the select to choose the language;
 - After clicking on `Apply`, center on the new rendered object;
-
 
 ## [1.1.0] - 2020-10-02
 
