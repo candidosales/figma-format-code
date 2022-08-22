@@ -33,11 +33,18 @@ Design & Developed by Cândido Sales.
 
 - A 11 Y Dark;
 - A 11 Y Light;
+- Android Studio;
 - Atom One Dark;
 - Atom One Light;
 - Default;
 - Dracula;
 - Ocean;
+- Github;
+- Github Dark;
+- Material;
+- Material Darker;
+- Material Palenight;
+- Monokai Sublime;
 - Paraiso Dark;
 - Paraiso Light;
 - Solarized Dark;
@@ -45,6 +52,7 @@ Design & Developed by Cândido Sales.
 - Vs;
 - Vs 2015;
 - Xcode;
+- XT 256;
 
 ## 📚 Reference
 
