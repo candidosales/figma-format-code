@@ -1,4 +1,4 @@
-![Format Code promo image](assets/cover.png?raw=true "Format Code promo")
+![Format Code promo image](assets/cover.png?raw=true 'Format Code promo')
 
 # Format Code
 
@@ -16,10 +16,15 @@ Design & Developed by Cândido Sales.
 
 - CSS;
 - HTML;
+- Go;
+- Java;
 - Javascript;
 - JSON;
+- Kotlin;
 - Less;
 - Markdown;
+- Python;
+- Ruby;
 - SCSS;
 - Typescript;
 - YAML;
@@ -28,11 +33,18 @@ Design & Developed by Cândido Sales.
 
 - A 11 Y Dark;
 - A 11 Y Light;
+- Android Studio;
 - Atom One Dark;
 - Atom One Light;
 - Default;
 - Dracula;
 - Ocean;
+- Github;
+- Github Dark;
+- Material;
+- Material Darker;
+- Material Palenight;
+- Monokai Sublime;
 - Paraiso Dark;
 - Paraiso Light;
 - Solarized Dark;
@@ -40,6 +52,7 @@ Design & Developed by Cândido Sales.
 - Vs;
 - Vs 2015;
 - Xcode;
+- XT 256;
 
 ## 📚 Reference
 
@@ -65,9 +78,9 @@ If you want to support Format Code, you can ☕ [**buy a coffee here**](https://
 
 <a href="https://www.buymeacoffee.com/candidosales" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-|                                                             | User                                             | Donation |
-| :---------------------------------------------------------- | :----------------------------------------------- | :------- |
-| ![](https://avatars.githubusercontent.com/u/2124218?s=25 ) | [@g0dkar](https://github.com/g0dkar)       | ☕ x 5    |
+|                                                           | User                                 | Donation |
+| :-------------------------------------------------------- | :----------------------------------- | :------- |
+| ![](https://avatars.githubusercontent.com/u/2124218?s=25) | [@g0dkar](https://github.com/g0dkar) | ☕ x 5   |
 
 ## ✨ Acknowledgment
 

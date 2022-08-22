@@ -1,3 +1,4 @@
+@use 'sass:math';
 @import './styles/figma.css';
 
 //// Highlight.js - Theme
@@ -59,6 +60,37 @@
   @import './styles/highlight.js/xcode';
 }
 
+.theme__android-studio {
+  @import './styles/highlight.js/android-studio';
+}
+
+.theme__github {
+  @import './styles/highlight.js/github';
+}
+
+.theme__github-dark {
+  @import './styles/highlight.js/github-dark';
+}
+
+.theme__material {
+  @import './styles/highlight.js/material';
+}
+
+.theme__material-darker {
+  @import './styles/highlight.js/material-darker';
+}
+
+.theme__material-palenight {
+  @import './styles/highlight.js/material-palenight';
+}
+
+.theme__monokai-sublime {
+  @import './styles/highlight.js/monokai-sublime';
+}
+
+.theme__xt256 {
+  @import './styles/highlight.js/xt256';
+}
 /*Variables*/
 
 $global-gutter: 16px;
@@ -133,11 +165,11 @@ button {
 }
 
 .original {
-  margin-right: $global-gutter/2;;
+  margin-right: math.div($global-gutter,2);
 }
 
 .preview {
-  margin-left: $global-gutter/2;;
+  margin-left: math.div($global-gutter,2);
 }
 
 .original,
