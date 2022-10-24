@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.3.3] - 2022-10-24
+
+### Fixed
+
+- Fixed support to Figjam;
+
 ## [1.3.2] - 2022-08-21
 
 ### Added
