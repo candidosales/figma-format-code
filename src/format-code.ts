@@ -16,7 +16,6 @@ import parserYaml from 'prettier/parser-yaml';
  * formatCode - format the code
  */
 export const formatCode = (data: FormatData): FormatCode => {
-  console.log('formatCode data', data);
   if (data) {
     switch (data.format) {
       case FormatSupported.CSS:
