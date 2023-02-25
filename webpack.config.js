@@ -25,9 +25,9 @@ module.exports = (env, argv) => ({
   },
 
   devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
+    static: path.resolve(__dirname, 'src'),
+    open: true,
+    hot: true,
   },
 
   resolve: {
