@@ -126,6 +126,8 @@ function hideParserError(): void {
 function applyTheme(): Theme {
   let contentHTML = revertEscapeHtml($previewContent.innerHTML);
 
+  console.log('applyTheme contentHTML', contentHTML);
+
   const allTags = $previewContent.getElementsByTagName('span');
 
   // console.log('previewContent contentHTML', contentHTML);
@@ -139,7 +141,7 @@ function applyTheme(): Theme {
 
     const node = allTags[i];
     const selector = `<span class="${node.classList[0]}">`;
-    // console.log('selector', selector);
+    console.log('selector', selector);
 
     // TODO - Issue: Span Nested
     // TODO - Verify if exist span nested, if yes, jump for the next item
