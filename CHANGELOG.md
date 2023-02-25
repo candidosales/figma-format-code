@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.5.0] - 2023-02-25
+
+### Changed
+
+- Upgrade to Webpack 5;
+
 ## [1.4.0] - 2023-02-25
 
 ### Added

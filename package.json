@@ -1,11 +1,10 @@
 {
   "name": "Format-Code",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A Figma plugin designed to allow you to format and syntax highlighting code",
   "main": "code.js",
   "scripts": {
     "dev": "webpack serve --mode=development",
-    "watch": "webpack serve --mode=development",
     "build": "webpack --mode=production",
     "prettier": "prettier --write ./**/*"
   },
