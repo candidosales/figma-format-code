@@ -140,8 +140,7 @@ function applyTheme(): Theme {
     // console.log('i', i);
 
     const node = allTags[i];
-    const selector = `<span class="${node.classList[0]}">`;
-    console.log('selector', selector);
+    const selector = `<span class="${node.classList.value}">`;
 
     // TODO - Issue: Span Nested
     // TODO - Verify if exist span nested, if yes, jump for the next item

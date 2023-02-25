@@ -2,6 +2,10 @@
 
 ## [1.5.0] - 2023-02-25
 
+### Fixed
+
+- Fixed to mount node object with multiple CSS classes;
+
 ### Changed
 
 - Upgrade to Webpack 5;
