@@ -1,38 +1,10 @@
 import './ui.scss';
 
-// Dependencies
-//// Prettier - Format
-import prettier from 'prettier';
-
-import parserBabel from 'prettier/parser-babel';
-import parserPostcss from 'prettier/parser-postcss';
-// import parserHtml from '../node_modules/prettier/parser-html';  // TODO - Add HTML support
-import parserMarkdown from 'prettier/parser-markdown';
-import parserTypescript from 'prettier/parser-typescript';
-import parserYaml from 'prettier/parser-yaml';
-
-////// Highlight.js - Core
-
-import hljs from '../node_modules/highlight.js/lib/core'; // Reduce the footprint
-
-import hljsCSS from '../node_modules/highlight.js/lib/languages/css';
-import hljsJavascript from '../node_modules/highlight.js/lib/languages/javascript';
-import hljsJSON from '../node_modules/highlight.js/lib/languages/json';
-import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
-import hljsLess from '../node_modules/highlight.js/lib/languages/less';
-import hljsSCSS from '../node_modules/highlight.js/lib/languages/scss';
-import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
-import hljsKotlin from '../node_modules/highlight.js/lib/languages/kotlin';
-import hljsJava from '../node_modules/highlight.js/lib/languages/java';
-import hljsGo from '../node_modules/highlight.js/lib/languages/go';
-import hljsPython from '../node_modules/highlight.js/lib/languages/python';
-import hljsRuby from '../node_modules/highlight.js/lib/languages/ruby';
-// import hljsXML from '../node_modules/highlight.js/lib/languages/xml';  // TODO - Add HTML support
-import hljsYAML from '../node_modules/highlight.js/lib/languages/yaml';
-import hljsRust from '../node_modules/highlight.js/lib/languages/rust';
-
-import { NodePaint, Theme, FormatCode, FormatData } from './interface';
+import { NodePaint, Theme } from './interface';
 import { FormatSupported } from './constants';
+import { formatCode } from './format-code';
+import { highlight } from './highlight';
+import { escapeHtml, revertEscapeHtml } from './utils';
 
 const $compare = document.getElementById('compare');
 const $originalContent = document.getElementById('original-content');
@@ -50,29 +22,6 @@ let theme = ($selectTheme as HTMLInputElement).value;
 let appliedTheme: Theme;
 
 // Start
-
-// Common
-hljs.registerLanguage(FormatSupported.JSON, hljsJSON);
-hljs.registerLanguage(FormatSupported.MARKDOWN, hljsMarkdown);
-// hljs.registerLanguage(FORMAT_SUPPORTED.HTML, hljsXML);  // TODO - Add HTML support
-hljs.registerLanguage(FormatSupported.YAML, hljsYAML);
-
-// CSS
-hljs.registerLanguage(FormatSupported.CSS, hljsCSS);
-hljs.registerLanguage(FormatSupported.LESS, hljsLess);
-hljs.registerLanguage(FormatSupported.SCSS, hljsSCSS);
-
-// Scripting
-hljs.registerLanguage(FormatSupported.GO, hljsGo);
-hljs.registerLanguage(FormatSupported.JAVA, hljsJava);
-hljs.registerLanguage(FormatSupported.JAVASCRIPT, hljsJavascript);
-hljs.registerLanguage(FormatSupported.TYPESCRIPT, hljsTypescript);
-hljs.registerLanguage(FormatSupported.KOTLIN, hljsKotlin);
-hljs.registerLanguage(FormatSupported.PYTHON, hljsPython);
-hljs.registerLanguage(FormatSupported.RUBY, hljsRuby);
-hljs.registerLanguage(FormatSupported.RUST, hljsRust);
-
-hljs.highlightAll();
 
 parent.postMessage(
   {
@@ -112,10 +61,10 @@ $selectTheme.onchange = () => {
 // Messages Code -> UI
 onmessage = (event) => {
   let message = event.data.pluginMessage;
-  $originalContent.innerHTML = message.textCode;
+  $originalContent.innerHTML = escapeHtml(message.textCode);
 };
 
-function formatHighlightCode() {
+function formatHighlightCode(): void {
   let formattedCodeHighlightSintax = '';
 
   if (format) {
@@ -126,7 +75,7 @@ function formatHighlightCode() {
     }
 
     if (result.formatCode !== '') {
-      formattedCodeHighlightSintax = hljs.highlight(result.formatCode, {
+      formattedCodeHighlightSintax = highlight.highlight(result.formatCode, {
         language: format,
       }).value;
       $previewContent.innerHTML = formattedCodeHighlightSintax;
@@ -135,9 +84,7 @@ function formatHighlightCode() {
   }
 
   updateTheme();
-
   appliedTheme = applyTheme();
-  // console.log('appliedTheme', appliedTheme);
 }
 
 function updateTheme() {
@@ -158,83 +105,6 @@ function updateValues() {
   theme = (document.getElementById('select-theme') as HTMLInputElement).value;
 }
 
-/*
- * formatCode - format the code
- *
- */
-function formatCode(data: FormatData): FormatCode {
-  if (data) {
-    switch (data.format) {
-      case FormatSupported.CSS:
-      case FormatSupported.LESS:
-      case FormatSupported.SCSS:
-        return getFormatCodeConfig(
-          data.code,
-          FormatSupported.CSS,
-          parserPostcss
-        );
-      case FormatSupported.JSON:
-        return getFormatCodeConfig(
-          data.code,
-          FormatSupported.JSON,
-          parserBabel
-        );
-      // case FORMAT_SUPPORTED.HTML:  // TODO - Add HTML support
-      //   return getFormatCodeConfig(data.code, FormatSupported.HTML, parserHtml);
-      case FormatSupported.MARKDOWN:
-        return getFormatCodeConfig(
-          data.code,
-          FormatSupported.MARKDOWN,
-          parserMarkdown
-        );
-      case FormatSupported.JAVASCRIPT:
-      case FormatSupported.TYPESCRIPT:
-        return getFormatCodeConfig(
-          data.code,
-          FormatSupported.TYPESCRIPT,
-          parserTypescript
-        );
-      case FormatSupported.YAML:
-        return getFormatCodeConfig(data.code, FormatSupported.YAML, parserYaml);
-      default:
-        return {
-          formatCode: data.code,
-          error: '',
-        };
-    }
-  }
-}
-
-function getFormatCodeConfig(
-  code: string,
-  format: FormatSupported,
-  parser: any
-): FormatCode {
-  try {
-    return {
-      formatCode: prettier.format(code, {
-        parser: format,
-        plugins: [parser],
-      }),
-      error: '',
-    };
-  } catch (e) {
-    parent.postMessage(
-      {
-        pluginMessage: {
-          type: 'notify',
-          message: e.message,
-        },
-      },
-      '*'
-    );
-    return {
-      formatCode: '',
-      error: e.message,
-    };
-  }
-}
-
 function showParserError(errorMessage: string): void {
   const code = $originalError.getElementsByTagName('code');
   code[0].innerHTML = errorMessage;
@@ -250,15 +120,12 @@ function hideParserError(): void {
 }
 
 function applyTheme(): Theme {
-  // console.log('$previewContent.innerHTML', $previewContent.innerHTML);
-  // console.log('$previewContent.textContent', $previewContent.textContent);
+  let contentHTML = revertEscapeHtml($previewContent.innerHTML);
 
-  let contentHTML = $previewContent.innerHTML;
   const allTags = $previewContent.getElementsByTagName('span');
 
   // console.log('previewContent contentHTML', contentHTML);
   // console.log('applyTheme innerText', previewContent.innerText);
-
   // console.log('applyTheme all', allTags);
 
   const nodePaints: Array<NodePaint> = [];
@@ -277,16 +144,12 @@ function applyTheme(): Theme {
     const startIndex = contentHTML.indexOf(selector);
     const endIndex = startIndex + (node.innerHTML.length - 1);
 
-    // Remove the HTML Tag
+    // Remove the highlight JS HTML Tag
     const regexStart = /<\/?span[^>]*>/i;
     contentHTML = contentHTML.replace(regexStart, '');
 
     const regexEnd = /<\/span>/i;
     contentHTML = contentHTML.replace(regexEnd, '');
-
-    // console.log('contentHTML', contentHTML);
-    // console.log('applyTheme startIndex', startIndex);
-    // console.log('applyTheme endIndex', endIndex);
 
     nodePaints.push({
       content: node.innerHTML,
@@ -307,15 +170,6 @@ function applyTheme(): Theme {
       },
     });
   }
-
-  // console.log('contentHTML', contentHTML);
-
-  // HTML handle
-  // if (format === FORMAT_SUPPORTED.HTML) {
-  //   contentHTML = contentHTML.replace(/&lt;/gi, '<');
-  //   contentHTML = contentHTML.replace(/&gt;/gi, '>');
-  //   contentHTML = contentHTML.replace(/&amp;/gi, '&');
-  // }
 
   return {
     format,

@@ -9,10 +9,10 @@
 ### Fixed
 
 - Fixed support to Javascript;
+- Improved support for languages that use reserved characters as <, >, &, and ".
 
 ### Changed
 
-- Removed support to HTML for a while;
 - Improved the code prevent duplicated;
 
 ## [1.3.3] - 2022-10-24

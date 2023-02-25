@@ -13,7 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "highlight.js": "^11.7.0",
-    "prettier": "^2.8.4"
+    "prettier": "^2.8.4",
+    "prismjs": "^1.29.0"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.58.0",

@@ -5,7 +5,7 @@ export enum FormatSupported {
   JAVA = 'java',
   JAVASCRIPT = 'javascript',
   JSON = 'json',
-  // HTML= 'html', // TODO - Add HTML support
+  HTML = 'html',
   KOTLIN = 'kotlin',
   LESS = 'less',
   MARKDOWN = 'markdown',

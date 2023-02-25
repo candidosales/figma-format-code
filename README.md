@@ -15,6 +15,7 @@ Design & Developed by Cândido Sales.
 ## Languages supported
 
 - CSS;
+- HTML;
 - Go;
 - Java;
 - Javascript;
