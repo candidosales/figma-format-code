@@ -5,7 +5,7 @@ import './ui.scss';
 import prettier from '../node_modules/prettier/standalone';
 import parserBabel from '../node_modules/prettier/parser-babel';
 import parserPostcss from '../node_modules/prettier/parser-postcss';
-import parserHtml from '../node_modules/prettier/parser-html';
+// import parserHtml from '../node_modules/prettier/parser-html';  // TODO - Add HTML support
 import parserMarkdown from '../node_modules/prettier/parser-markdown';
 import parserTypescript from '../node_modules/prettier/parser-typescript';
 import parserYaml from '../node_modules/prettier/parser-yaml';
@@ -26,7 +26,7 @@ import hljsJava from '../node_modules/highlight.js/lib/languages/java';
 import hljsGo from '../node_modules/highlight.js/lib/languages/go';
 import hljsPython from '../node_modules/highlight.js/lib/languages/python';
 import hljsRuby from '../node_modules/highlight.js/lib/languages/ruby';
-import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
+// import hljsXML from '../node_modules/highlight.js/lib/languages/xml';  // TODO - Add HTML support
 import hljsYAML from '../node_modules/highlight.js/lib/languages/yaml';
 
 import { NodePaint, Theme, FormatCode } from './interface';
@@ -38,7 +38,7 @@ const formatSupported = {
   JAVA: 'java',
   JAVASCRIPT: 'javascript',
   JSON: 'json',
-  HTML: 'html',
+  // HTML: 'html', // TODO - Add HTML support
   KOTLIN: 'kotlin',
   LESS: 'less',
   MARKDOWN: 'markdown',
@@ -69,7 +69,7 @@ let appliedTheme: Theme;
 // Common
 hljs.registerLanguage(formatSupported.JSON, hljsJSON);
 hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
-hljs.registerLanguage(formatSupported.HTML, hljsXML);
+// hljs.registerLanguage(formatSupported.HTML, hljsXML);  // TODO - Add HTML support
 hljs.registerLanguage(formatSupported.YAML, hljsYAML);
 
 // CSS
@@ -227,30 +227,30 @@ function formatCode(data: { format: string; code: string }): FormatCode {
             error: e.message,
           };
         }
-      case formatSupported.HTML:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.HTML,
-              plugins: [parserHtml],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
+      // case formatSupported.HTML:  // TODO - Add HTML support
+      //   try {
+      //     return {
+      //       formatCode: prettier.format(data.code, {
+      //         parser: formatSupported.HTML,
+      //         plugins: [parserHtml],
+      //       }),
+      //       error: '',
+      //     };
+      //   } catch (e) {
+      //     parent.postMessage(
+      //       {
+      //         pluginMessage: {
+      //           type: 'notify',
+      //           message: e.message,
+      //         },
+      //       },
+      //       '*'
+      //     );
+      //     return {
+      //       formatCode: '',
+      //       error: e.message,
+      //     };
+      //   }
       case formatSupported.MARKDOWN:
         try {
           return {
