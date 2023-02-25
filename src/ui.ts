@@ -4,7 +4,12 @@ import { NodePaint, Theme } from './interface';
 import { FormatSupported } from './constants';
 import { formatCode } from './format-code';
 import { highlight } from './highlight';
-import { escapeHtml, revertEscapeHtml } from './utils';
+import {
+  calculateRGB,
+  escapeHtml,
+  getFontWeight,
+  revertEscapeHtml,
+} from './utils';
 
 const $compare = document.getElementById('compare');
 const $originalContent = document.getElementById('original-content');
@@ -18,7 +23,6 @@ const $selectTheme = document.getElementById('select-theme');
 
 let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
 let theme = ($selectTheme as HTMLInputElement).value;
-
 let appliedTheme: Theme;
 
 // Start
@@ -166,7 +170,7 @@ function applyTheme(): Theme {
       },
       fontName: {
         family: 'Roboto',
-        style: getFontStyle(window.getComputedStyle(node).fontWeight),
+        style: getFontWeight(window.getComputedStyle(node).fontWeight),
       },
     });
   }
@@ -188,27 +192,31 @@ function applyTheme(): Theme {
   };
 }
 
-function calculateRGB(color: string): RGB {
-  const rgbColor = color.match(/\d+/g);
-  return {
-    r: parseInt(rgbColor[0]) / 255,
-    g: parseInt(rgbColor[1]) / 255,
-    b: parseInt(rgbColor[2]) / 255,
-  };
-}
+// função recursiva que remove as tags span dos elementos
+function removeTagsSpan(elem) {
+  // verifica se o elemento é uma tag span
+  if (elem && elem.tagName === 'SPAN') {
+    // percorre todos os elementos filhos
+    for (let i = 0; i < elem.childNodes.length; i++) {
+      let child = elem.childNodes[i];
+      // se o elemento filho também for uma tag span, remova suas tags span primeiro
+      if (child.tagName === 'SPAN') {
+        removeTagsSpan(child);
+      }
+    }
+    // agora remova a tag span deste elemento
+    let parent = elem.parentNode;
 
-function getFontStyle(fontWeight: string): string {
-  if (fontWeight) {
-    switch (fontWeight) {
-      case '400':
-        return 'Regular';
-      case '700':
-        return 'Bold';
-      default:
-        return 'Regular';
+    while (elem.firstChild) {
+      parent.insertBefore(elem.firstChild, elem);
+    }
+    parent.removeChild(elem);
+  } else {
+    // se não for uma tag span, percorra todos os elementos filhos e remova suas tags span
+    for (let i = 0; i < elem.childNodes.length; i++) {
+      removeTagsSpan(elem.childNodes[i]);
     }
   }
-  return 'Regular';
 }
 
 // function test() {
