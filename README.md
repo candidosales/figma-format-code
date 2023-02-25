@@ -24,6 +24,7 @@ Design & Developed by Cândido Sales.
 - Markdown;
 - Python;
 - Ruby;
+- Rust;
 - SCSS;
 - Typescript;
 - YAML;

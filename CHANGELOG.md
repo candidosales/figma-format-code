@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [1.3.4] - 2023-02-25
+
+### Added
+
+- Added support to Rust;
+
+### Fixed
+
+- Fixed support to Javascript;
+
+### Changed
+
+- Removed support to HTML for a while;
+- Improved the code prevent duplicated;
+
 ## [1.3.3] - 2022-10-24
 
 ### Fixed

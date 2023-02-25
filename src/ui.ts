@@ -2,13 +2,14 @@ import './ui.scss';
 
 // Dependencies
 //// Prettier - Format
-import prettier from '../node_modules/prettier/standalone';
-import parserBabel from '../node_modules/prettier/parser-babel';
-import parserPostcss from '../node_modules/prettier/parser-postcss';
+import prettier from 'prettier';
+
+import parserBabel from 'prettier/parser-babel';
+import parserPostcss from 'prettier/parser-postcss';
 // import parserHtml from '../node_modules/prettier/parser-html';  // TODO - Add HTML support
-import parserMarkdown from '../node_modules/prettier/parser-markdown';
-import parserTypescript from '../node_modules/prettier/parser-typescript';
-import parserYaml from '../node_modules/prettier/parser-yaml';
+import parserMarkdown from 'prettier/parser-markdown';
+import parserTypescript from 'prettier/parser-typescript';
+import parserYaml from 'prettier/parser-yaml';
 
 ////// Highlight.js - Core
 
@@ -28,26 +29,10 @@ import hljsPython from '../node_modules/highlight.js/lib/languages/python';
 import hljsRuby from '../node_modules/highlight.js/lib/languages/ruby';
 // import hljsXML from '../node_modules/highlight.js/lib/languages/xml';  // TODO - Add HTML support
 import hljsYAML from '../node_modules/highlight.js/lib/languages/yaml';
+import hljsRust from '../node_modules/highlight.js/lib/languages/rust';
 
-import { NodePaint, Theme, FormatCode } from './interface';
-
-// Variables
-const formatSupported = {
-  CSS: 'css',
-  GO: 'go',
-  JAVA: 'java',
-  JAVASCRIPT: 'javascript',
-  JSON: 'json',
-  // HTML: 'html', // TODO - Add HTML support
-  KOTLIN: 'kotlin',
-  LESS: 'less',
-  MARKDOWN: 'markdown',
-  PYTHON: 'python',
-  RUBY: 'ruby',
-  SCSS: 'scss',
-  TYPESCRIPT: 'typescript',
-  YAML: 'yaml',
-};
+import { NodePaint, Theme, FormatCode, FormatData } from './interface';
+import { FormatSupported } from './constants';
 
 const $compare = document.getElementById('compare');
 const $originalContent = document.getElementById('original-content');
@@ -59,7 +44,7 @@ const $buttonPreview = document.getElementById('button-preview');
 const $selectFormat = document.getElementById('select-format');
 const $selectTheme = document.getElementById('select-theme');
 
-let format = ($selectFormat as HTMLInputElement).value;
+let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
 let theme = ($selectTheme as HTMLInputElement).value;
 
 let appliedTheme: Theme;
@@ -67,24 +52,25 @@ let appliedTheme: Theme;
 // Start
 
 // Common
-hljs.registerLanguage(formatSupported.JSON, hljsJSON);
-hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
-// hljs.registerLanguage(formatSupported.HTML, hljsXML);  // TODO - Add HTML support
-hljs.registerLanguage(formatSupported.YAML, hljsYAML);
+hljs.registerLanguage(FormatSupported.JSON, hljsJSON);
+hljs.registerLanguage(FormatSupported.MARKDOWN, hljsMarkdown);
+// hljs.registerLanguage(FORMAT_SUPPORTED.HTML, hljsXML);  // TODO - Add HTML support
+hljs.registerLanguage(FormatSupported.YAML, hljsYAML);
 
 // CSS
-hljs.registerLanguage(formatSupported.CSS, hljsCSS);
-hljs.registerLanguage(formatSupported.LESS, hljsLess);
-hljs.registerLanguage(formatSupported.SCSS, hljsSCSS);
+hljs.registerLanguage(FormatSupported.CSS, hljsCSS);
+hljs.registerLanguage(FormatSupported.LESS, hljsLess);
+hljs.registerLanguage(FormatSupported.SCSS, hljsSCSS);
 
 // Scripting
-hljs.registerLanguage(formatSupported.GO, hljsGo);
-hljs.registerLanguage(formatSupported.JAVA, hljsJava);
-hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
-hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
-hljs.registerLanguage(formatSupported.KOTLIN, hljsKotlin);
-hljs.registerLanguage(formatSupported.PYTHON, hljsPython);
-hljs.registerLanguage(formatSupported.RUBY, hljsRuby);
+hljs.registerLanguage(FormatSupported.GO, hljsGo);
+hljs.registerLanguage(FormatSupported.JAVA, hljsJava);
+hljs.registerLanguage(FormatSupported.JAVASCRIPT, hljsJavascript);
+hljs.registerLanguage(FormatSupported.TYPESCRIPT, hljsTypescript);
+hljs.registerLanguage(FormatSupported.KOTLIN, hljsKotlin);
+hljs.registerLanguage(FormatSupported.PYTHON, hljsPython);
+hljs.registerLanguage(FormatSupported.RUBY, hljsRuby);
+hljs.registerLanguage(FormatSupported.RUST, hljsRust);
 
 hljs.highlightAll();
 
@@ -167,170 +153,85 @@ function updateTheme() {
 }
 
 function updateValues() {
-  format = (document.getElementById('select-format') as HTMLInputElement).value;
+  format = (document.getElementById('select-format') as HTMLInputElement)
+    .value as FormatSupported;
   theme = (document.getElementById('select-theme') as HTMLInputElement).value;
 }
 
-function formatCode(data: { format: string; code: string }): FormatCode {
-  // console.log('formatCode data', data);
-
+/*
+ * formatCode - format the code
+ *
+ */
+function formatCode(data: FormatData): FormatCode {
   if (data) {
     switch (data.format) {
-      case formatSupported.CSS:
-      case formatSupported.LESS:
-      case formatSupported.SCSS:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.CSS,
-              plugins: [parserPostcss],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.JAVASCRIPT:
-      case formatSupported.JSON:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.JSON,
-              plugins: [parserBabel],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      // case formatSupported.HTML:  // TODO - Add HTML support
-      //   try {
-      //     return {
-      //       formatCode: prettier.format(data.code, {
-      //         parser: formatSupported.HTML,
-      //         plugins: [parserHtml],
-      //       }),
-      //       error: '',
-      //     };
-      //   } catch (e) {
-      //     parent.postMessage(
-      //       {
-      //         pluginMessage: {
-      //           type: 'notify',
-      //           message: e.message,
-      //         },
-      //       },
-      //       '*'
-      //     );
-      //     return {
-      //       formatCode: '',
-      //       error: e.message,
-      //     };
-      //   }
-      case formatSupported.MARKDOWN:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.MARKDOWN,
-              plugins: [parserMarkdown],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.TYPESCRIPT:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.TYPESCRIPT,
-              plugins: [parserTypescript],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          console.warn('format', data.format, 'error', e.message);
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.YAML:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.YAML,
-              plugins: [parserYaml],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          console.warn('format', data.format, 'error', e.message);
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
+      case FormatSupported.CSS:
+      case FormatSupported.LESS:
+      case FormatSupported.SCSS:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.CSS,
+          parserPostcss
+        );
+      case FormatSupported.JSON:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.JSON,
+          parserBabel
+        );
+      // case FORMAT_SUPPORTED.HTML:  // TODO - Add HTML support
+      //   return getFormatCodeConfig(data.code, FormatSupported.HTML, parserHtml);
+      case FormatSupported.MARKDOWN:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.MARKDOWN,
+          parserMarkdown
+        );
+      case FormatSupported.JAVASCRIPT:
+      case FormatSupported.TYPESCRIPT:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.TYPESCRIPT,
+          parserTypescript
+        );
+      case FormatSupported.YAML:
+        return getFormatCodeConfig(data.code, FormatSupported.YAML, parserYaml);
       default:
         return {
           formatCode: data.code,
           error: '',
         };
     }
+  }
+}
+
+function getFormatCodeConfig(
+  code: string,
+  format: FormatSupported,
+  parser: any
+): FormatCode {
+  try {
+    return {
+      formatCode: prettier.format(code, {
+        parser: format,
+        plugins: [parser],
+      }),
+      error: '',
+    };
+  } catch (e) {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'notify',
+          message: e.message,
+        },
+      },
+      '*'
+    );
+    return {
+      formatCode: '',
+      error: e.message,
+    };
   }
 }
 
@@ -410,7 +311,7 @@ function applyTheme(): Theme {
   // console.log('contentHTML', contentHTML);
 
   // HTML handle
-  // if (format === formatSupported.HTML) {
+  // if (format === FORMAT_SUPPORTED.HTML) {
   //   contentHTML = contentHTML.replace(/&lt;/gi, '<');
   //   contentHTML = contentHTML.replace(/&gt;/gi, '>');
   //   contentHTML = contentHTML.replace(/&amp;/gi, '&');
@@ -452,8 +353,8 @@ function getFontStyle(fontWeight: string): string {
       default:
         return 'Regular';
     }
-    return 'Regular';
   }
+  return 'Regular';
 }
 
 // function test() {
