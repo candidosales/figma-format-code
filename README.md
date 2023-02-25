@@ -16,6 +16,7 @@ Design & Developed by Cândido Sales.
 
 - CSS;
 - HTML;
+  - It has a known issue with <span> tags. I'm still investigating how to fix it;
 - Go;
 - Java;
 - Javascript;
@@ -25,6 +26,7 @@ Design & Developed by Cândido Sales.
 - Markdown;
 - Python;
 - Ruby;
+- Rust;
 - SCSS;
 - Typescript;
 - YAML;

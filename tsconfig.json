@@ -4,6 +4,8 @@
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@figma"
-    ]
+    ],
+    "moduleResolution": "node",
+    "lib": ["es2021"]
   }
 }

@@ -1,53 +1,15 @@
 import './ui.scss';
 
-// Dependencies
-//// Prettier - Format
-import prettier from '../node_modules/prettier/standalone';
-import parserBabel from '../node_modules/prettier/parser-babel';
-import parserPostcss from '../node_modules/prettier/parser-postcss';
-import parserHtml from '../node_modules/prettier/parser-html';
-import parserMarkdown from '../node_modules/prettier/parser-markdown';
-import parserTypescript from '../node_modules/prettier/parser-typescript';
-import parserYaml from '../node_modules/prettier/parser-yaml';
-
-////// Highlight.js - Core
-
-import hljs from '../node_modules/highlight.js/lib/core'; // Reduce the footprint
-
-import hljsCSS from '../node_modules/highlight.js/lib/languages/css';
-import hljsJavascript from '../node_modules/highlight.js/lib/languages/javascript';
-import hljsJSON from '../node_modules/highlight.js/lib/languages/json';
-import hljsMarkdown from '../node_modules/highlight.js/lib/languages/markdown';
-import hljsLess from '../node_modules/highlight.js/lib/languages/less';
-import hljsSCSS from '../node_modules/highlight.js/lib/languages/scss';
-import hljsTypescript from '../node_modules/highlight.js/lib/languages/typescript';
-import hljsKotlin from '../node_modules/highlight.js/lib/languages/kotlin';
-import hljsJava from '../node_modules/highlight.js/lib/languages/java';
-import hljsGo from '../node_modules/highlight.js/lib/languages/go';
-import hljsPython from '../node_modules/highlight.js/lib/languages/python';
-import hljsRuby from '../node_modules/highlight.js/lib/languages/ruby';
-import hljsXML from '../node_modules/highlight.js/lib/languages/xml';
-import hljsYAML from '../node_modules/highlight.js/lib/languages/yaml';
-
-import { NodePaint, Theme, FormatCode } from './interface';
-
-// Variables
-const formatSupported = {
-  CSS: 'css',
-  GO: 'go',
-  JAVA: 'java',
-  JAVASCRIPT: 'javascript',
-  JSON: 'json',
-  HTML: 'html',
-  KOTLIN: 'kotlin',
-  LESS: 'less',
-  MARKDOWN: 'markdown',
-  PYTHON: 'python',
-  RUBY: 'ruby',
-  SCSS: 'scss',
-  TYPESCRIPT: 'typescript',
-  YAML: 'yaml',
-};
+import { NodePaint, Theme } from './interface';
+import { FormatSupported } from './constants';
+import { formatCode } from './format-code';
+import { highlight } from './highlight';
+import {
+  calculateRGB,
+  escapeHtml,
+  getFontWeight,
+  revertEscapeHtml,
+} from './utils';
 
 const $compare = document.getElementById('compare');
 const $originalContent = document.getElementById('original-content');
@@ -59,34 +21,11 @@ const $buttonPreview = document.getElementById('button-preview');
 const $selectFormat = document.getElementById('select-format');
 const $selectTheme = document.getElementById('select-theme');
 
-let format = ($selectFormat as HTMLInputElement).value;
+let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
 let theme = ($selectTheme as HTMLInputElement).value;
-
 let appliedTheme: Theme;
 
 // Start
-
-// Common
-hljs.registerLanguage(formatSupported.JSON, hljsJSON);
-hljs.registerLanguage(formatSupported.MARKDOWN, hljsMarkdown);
-hljs.registerLanguage(formatSupported.HTML, hljsXML);
-hljs.registerLanguage(formatSupported.YAML, hljsYAML);
-
-// CSS
-hljs.registerLanguage(formatSupported.CSS, hljsCSS);
-hljs.registerLanguage(formatSupported.LESS, hljsLess);
-hljs.registerLanguage(formatSupported.SCSS, hljsSCSS);
-
-// Scripting
-hljs.registerLanguage(formatSupported.GO, hljsGo);
-hljs.registerLanguage(formatSupported.JAVA, hljsJava);
-hljs.registerLanguage(formatSupported.JAVASCRIPT, hljsJavascript);
-hljs.registerLanguage(formatSupported.TYPESCRIPT, hljsTypescript);
-hljs.registerLanguage(formatSupported.KOTLIN, hljsKotlin);
-hljs.registerLanguage(formatSupported.PYTHON, hljsPython);
-hljs.registerLanguage(formatSupported.RUBY, hljsRuby);
-
-hljs.highlightAll();
 
 parent.postMessage(
   {
@@ -126,10 +65,10 @@ $selectTheme.onchange = () => {
 // Messages Code -> UI
 onmessage = (event) => {
   let message = event.data.pluginMessage;
-  $originalContent.innerHTML = message.textCode;
+  $originalContent.innerHTML = escapeHtml(message.textCode);
 };
 
-function formatHighlightCode() {
+function formatHighlightCode(): void {
   let formattedCodeHighlightSintax = '';
 
   if (format) {
@@ -140,7 +79,7 @@ function formatHighlightCode() {
     }
 
     if (result.formatCode !== '') {
-      formattedCodeHighlightSintax = hljs.highlight(result.formatCode, {
+      formattedCodeHighlightSintax = highlight.highlight(result.formatCode, {
         language: format,
       }).value;
       $previewContent.innerHTML = formattedCodeHighlightSintax;
@@ -149,9 +88,7 @@ function formatHighlightCode() {
   }
 
   updateTheme();
-
   appliedTheme = applyTheme();
-  // console.log('appliedTheme', appliedTheme);
 }
 
 function updateTheme() {
@@ -167,171 +104,9 @@ function updateTheme() {
 }
 
 function updateValues() {
-  format = (document.getElementById('select-format') as HTMLInputElement).value;
+  format = (document.getElementById('select-format') as HTMLInputElement)
+    .value as FormatSupported;
   theme = (document.getElementById('select-theme') as HTMLInputElement).value;
-}
-
-function formatCode(data: { format: string; code: string }): FormatCode {
-  // console.log('formatCode data', data);
-
-  if (data) {
-    switch (data.format) {
-      case formatSupported.CSS:
-      case formatSupported.LESS:
-      case formatSupported.SCSS:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.CSS,
-              plugins: [parserPostcss],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.JAVASCRIPT:
-      case formatSupported.JSON:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.JSON,
-              plugins: [parserBabel],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.HTML:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.HTML,
-              plugins: [parserHtml],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.MARKDOWN:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.MARKDOWN,
-              plugins: [parserMarkdown],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.TYPESCRIPT:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.TYPESCRIPT,
-              plugins: [parserTypescript],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          console.warn('format', data.format, 'error', e.message);
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      case formatSupported.YAML:
-        try {
-          return {
-            formatCode: prettier.format(data.code, {
-              parser: formatSupported.YAML,
-              plugins: [parserYaml],
-            }),
-            error: '',
-          };
-        } catch (e) {
-          console.warn('format', data.format, 'error', e.message);
-          parent.postMessage(
-            {
-              pluginMessage: {
-                type: 'notify',
-                message: e.message,
-              },
-            },
-            '*'
-          );
-          return {
-            formatCode: '',
-            error: e.message,
-          };
-        }
-      default:
-        return {
-          formatCode: data.code,
-          error: '',
-        };
-    }
-  }
 }
 
 function showParserError(errorMessage: string): void {
@@ -349,15 +124,12 @@ function hideParserError(): void {
 }
 
 function applyTheme(): Theme {
-  // console.log('$previewContent.innerHTML', $previewContent.innerHTML);
-  // console.log('$previewContent.textContent', $previewContent.textContent);
+  let contentHTML = revertEscapeHtml($previewContent.innerHTML);
 
-  let contentHTML = $previewContent.innerHTML;
   const allTags = $previewContent.getElementsByTagName('span');
 
   // console.log('previewContent contentHTML', contentHTML);
   // console.log('applyTheme innerText', previewContent.innerText);
-
   // console.log('applyTheme all', allTags);
 
   const nodePaints: Array<NodePaint> = [];
@@ -376,16 +148,12 @@ function applyTheme(): Theme {
     const startIndex = contentHTML.indexOf(selector);
     const endIndex = startIndex + (node.innerHTML.length - 1);
 
-    // Remove the HTML Tag
+    // Remove the highlight JS HTML Tag
     const regexStart = /<\/?span[^>]*>/i;
     contentHTML = contentHTML.replace(regexStart, '');
 
     const regexEnd = /<\/span>/i;
     contentHTML = contentHTML.replace(regexEnd, '');
-
-    // console.log('contentHTML', contentHTML);
-    // console.log('applyTheme startIndex', startIndex);
-    // console.log('applyTheme endIndex', endIndex);
 
     nodePaints.push({
       content: node.innerHTML,
@@ -402,19 +170,10 @@ function applyTheme(): Theme {
       },
       fontName: {
         family: 'Roboto',
-        style: getFontStyle(window.getComputedStyle(node).fontWeight),
+        style: getFontWeight(window.getComputedStyle(node).fontWeight),
       },
     });
   }
-
-  // console.log('contentHTML', contentHTML);
-
-  // HTML handle
-  // if (format === formatSupported.HTML) {
-  //   contentHTML = contentHTML.replace(/&lt;/gi, '<');
-  //   contentHTML = contentHTML.replace(/&gt;/gi, '>');
-  //   contentHTML = contentHTML.replace(/&amp;/gi, '&');
-  // }
 
   return {
     format,
@@ -433,26 +192,30 @@ function applyTheme(): Theme {
   };
 }
 
-function calculateRGB(color: string): RGB {
-  const rgbColor = color.match(/\d+/g);
-  return {
-    r: parseInt(rgbColor[0]) / 255,
-    g: parseInt(rgbColor[1]) / 255,
-    b: parseInt(rgbColor[2]) / 255,
-  };
-}
-
-function getFontStyle(fontWeight: string): string {
-  if (fontWeight) {
-    switch (fontWeight) {
-      case '400':
-        return 'Regular';
-      case '700':
-        return 'Bold';
-      default:
-        return 'Regular';
+// função recursiva que remove as tags span dos elementos
+function removeTagsSpan(elem) {
+  // verifica se o elemento é uma tag span
+  if (elem && elem.tagName === 'SPAN') {
+    // percorre todos os elementos filhos
+    for (let i = 0; i < elem.childNodes.length; i++) {
+      let child = elem.childNodes[i];
+      // se o elemento filho também for uma tag span, remova suas tags span primeiro
+      if (child.tagName === 'SPAN') {
+        removeTagsSpan(child);
+      }
     }
-    return 'Regular';
+    // agora remova a tag span deste elemento
+    let parent = elem.parentNode;
+
+    while (elem.firstChild) {
+      parent.insertBefore(elem.firstChild, elem);
+    }
+    parent.removeChild(elem);
+  } else {
+    // se não for uma tag span, percorra todos os elementos filhos e remova suas tags span
+    for (let i = 0; i < elem.childNodes.length; i++) {
+      removeTagsSpan(elem.childNodes[i]);
+    }
   }
 }
 

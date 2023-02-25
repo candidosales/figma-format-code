@@ -1,3 +1,5 @@
+import { FormatSupported } from './constants';
+
 export interface NodePaint {
   content: string;
   range: NodePaintRange;
@@ -21,6 +23,11 @@ export interface ThemeGlobal {
   color: RGB;
   backgroundColor: RGB;
   fontName: FontName;
+}
+
+export interface FormatData {
+  format: FormatSupported;
+  code: string;
 }
 
 export interface FormatCode {

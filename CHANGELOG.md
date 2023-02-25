@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [1.4.0] - 2023-02-25
+
+### Added
+
+- Added support to Rust;
+
+### Fixed
+
+- Fixed support to Javascript;
+- Improved support for languages that use reserved characters as <, >, &, and ".
+
+### Changed
+
+- Improved the code prevent duplicated;
+
 ## [1.3.3] - 2022-10-24
 
 ### Fixed
