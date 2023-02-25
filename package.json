@@ -12,13 +12,14 @@
   "author": "Candido Sales Gomes <candidosg@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@effortlessmotion/html-webpack-inline-source-plugin": "^1.0.3",
     "highlight.js": "^11.7.0",
     "prettier": "^2.8.4"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.58.0",
+    "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.7.3",
-    "html-webpack-inline-source-plugin": "1.0.0-beta.2",
     "html-webpack-plugin": "^5.5.0",
     "inline-chunk-html-plugin": "^1.1.1",
     "sass": "1.58.3",

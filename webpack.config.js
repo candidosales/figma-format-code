@@ -1,7 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-const InlineChunkHtmlPlugin = require('inline-chunk-html-plugin');
+const HtmlWebpackInlineSourcePlugin = require('@effortlessmotion/html-webpack-inline-source-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 const webpack = require('webpack');
 
 module.exports = (env, argv) => ({
@@ -15,6 +16,7 @@ module.exports = (env, argv) => ({
 
   output: {
     filename: '[name].js',
+    publicPath: '',
     path: path.resolve(__dirname, 'dist'), // Compile into a folder called "dist"
     environment: {
       // The environment supports arrow functions ('() => { ... }').
@@ -22,7 +24,11 @@ module.exports = (env, argv) => ({
     },
   },
 
-  target: 'web',
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
+  },
 
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', 'json'],
@@ -46,27 +52,27 @@ module.exports = (env, argv) => ({
         use: ['style-loader', 'css-loader'],
       },
 
+      // https://webpack.js.org/guides/asset-modules/
       {
         test: /\.(png|jpg|gif|webp|svg)$/,
-        type: 'asset/resource',
+        type: 'asset/inline',
       },
     ],
   },
 
   plugins: [
+    new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       global: {}, // Fix missing symbol error when running in developer VM
     }),
     new HtmlWebpackPlugin({
       template: './src/ui.html',
       filename: 'ui.html',
-      inlineSource: '.(js)$',
-
-      //   inject: 'body', // incluir o código gerado no corpo do arquivo HTML
-      //   inlineSource: '.(js|css)$', // habilitar a inclusão do código inline
+      inlineSource: '.(js|css)$',
       chunks: ['ui'],
+      inject: 'body',
     }),
-    // new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]), // incluir o código runtime inline
+    new HtmlWebpackInlineSourcePlugin(),
   ],
 
   optimization: {
