@@ -126,8 +126,6 @@ function hideParserError(): void {
 function applyTheme(): Theme {
   let contentHTML = revertEscapeHtml($previewContent.innerHTML);
 
-  console.log('applyTheme contentHTML 4', contentHTML);
-
   const allTags = $previewContent.getElementsByTagName('span');
 
   // console.log('previewContent contentHTML', contentHTML);
