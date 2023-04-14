@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.6.0] - 2023-04-13
+
+### Added
+
+- Added support to GraphQL (with prettier formatter), Lua and Haskell;
+
 ## [1.5.0] - 2023-02-25
 
 ### Fixed

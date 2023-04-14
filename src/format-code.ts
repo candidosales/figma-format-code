@@ -6,9 +6,10 @@ import { FormatCode, FormatData } from './interface';
 import prettier from 'prettier';
 
 import parserBabel from 'prettier/parser-babel';
-import parserPostcss from 'prettier/parser-postcss';
+import parserGraphQl from 'prettier/parser-graphql';
 import parserHtml from 'prettier/parser-html';
 import parserMarkdown from 'prettier/parser-markdown';
+import parserPostcss from 'prettier/parser-postcss';
 import parserTypescript from 'prettier/parser-typescript';
 import parserYaml from 'prettier/parser-yaml';
 
@@ -49,6 +50,12 @@ export const formatCode = (data: FormatData): FormatCode => {
         );
       case FormatSupported.YAML:
         return getFormatCodeConfig(data.code, FormatSupported.YAML, parserYaml);
+      case FormatSupported.GRAPHQL:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.GRAPHQL,
+          parserGraphQl
+        );
       default:
         return {
           formatCode: data.code,
