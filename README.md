@@ -18,11 +18,14 @@ Design & Developed by Cândido Sales.
 - HTML;
   - It has a known issue with `<span>` tags. I'm still investigating how to fix it;
 - Go;
+- GraphQL;
 - Java;
 - Javascript;
 - JSON;
+- Haskell;
 - Kotlin;
 - Less;
+- Lua;
 - Markdown;
 - Python;
 - Ruby;

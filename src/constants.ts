@@ -1,13 +1,16 @@
 // Variables
 export enum FormatSupported {
   CSS = 'css',
+  GRAPHQL = 'graphql',
   GO = 'go',
+  HASKELL = 'haskell',
   JAVA = 'java',
   JAVASCRIPT = 'javascript',
   JSON = 'json',
   HTML = 'html',
   KOTLIN = 'kotlin',
   LESS = 'less',
+  LUA = 'lua',
   MARKDOWN = 'markdown',
   PYTHON = 'python',
   RUBY = 'ruby',
