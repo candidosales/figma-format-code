@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added support to GraphQL, Lua and Haskell;
+- Added support to GraphQL (with prettier formatter), Lua and Haskell;
 
 ## [1.5.0] - 2023-02-25
 
