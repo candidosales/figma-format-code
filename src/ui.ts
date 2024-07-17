@@ -64,7 +64,7 @@ $selectTheme.onchange = () => {
 
 // Messages Code -> UI
 onmessage = (event) => {
-  let message = event.data.pluginMessage;
+  const message = event.data.pluginMessage;
   $originalContent.innerHTML = escapeHtml(message.textCode);
 };
 
@@ -192,31 +192,31 @@ function applyTheme(): Theme {
 }
 
 // função recursiva que remove as tags span dos elementos
-function removeTagsSpan(elem) {
-  // verifica se o elemento é uma tag span
-  if (elem && elem.tagName === 'SPAN') {
-    // percorre todos os elementos filhos
-    for (let i = 0; i < elem.childNodes.length; i++) {
-      let child = elem.childNodes[i];
-      // se o elemento filho também for uma tag span, remova suas tags span primeiro
-      if (child.tagName === 'SPAN') {
-        removeTagsSpan(child);
-      }
-    }
-    // agora remova a tag span deste elemento
-    let parent = elem.parentNode;
+// function removeTagsSpan(elem) {
+//   // verifica se o elemento é uma tag span
+//   if (elem && elem.tagName === 'SPAN') {
+//     // percorre todos os elementos filhos
+//     for (let i = 0; i < elem.childNodes.length; i++) {
+//       let child = elem.childNodes[i];
+//       // se o elemento filho também for uma tag span, remova suas tags span primeiro
+//       if (child.tagName === 'SPAN') {
+//         removeTagsSpan(child);
+//       }
+//     }
+//     // agora remova a tag span deste elemento
+//     let parent = elem.parentNode;
 
-    while (elem.firstChild) {
-      parent.insertBefore(elem.firstChild, elem);
-    }
-    parent.removeChild(elem);
-  } else {
-    // se não for uma tag span, percorra todos os elementos filhos e remova suas tags span
-    for (let i = 0; i < elem.childNodes.length; i++) {
-      removeTagsSpan(elem.childNodes[i]);
-    }
-  }
-}
+//     while (elem.firstChild) {
+//       parent.insertBefore(elem.firstChild, elem);
+//     }
+//     parent.removeChild(elem);
+//   } else {
+//     // se não for uma tag span, percorra todos os elementos filhos e remova suas tags span
+//     for (let i = 0; i < elem.childNodes.length; i++) {
+//       removeTagsSpan(elem.childNodes[i]);
+//     }
+//   }
+// }
 
 // function test() {
 //   const str = '  <span class="x">"abc"</span>';

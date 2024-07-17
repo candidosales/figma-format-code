@@ -11,7 +11,7 @@ figma.showUI(__html__, { width: 700, height: 480 });
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'start') {
-    for (let node of figma.currentPage.selection) {
+    for (const node of figma.currentPage.selection) {
       if (node.type === 'TEXT') {
         figma.ui.postMessage({ textCode: node.characters });
       }
@@ -36,9 +36,9 @@ async function applyTheme(theme: Theme) {
   const cornerRadius = 5;
 
   // Load all fonts before to create or update text nodes;
-  for (let node of figma.currentPage.selection) {
+  for (const node of figma.currentPage.selection) {
     if (node.type === 'TEXT') {
-      let nodeFonts = node.getRangeAllFontNames(0, node.characters.length);
+      const nodeFonts = node.getRangeAllFontNames(0, node.characters.length);
       await loadFonts(nodeFonts);
     }
   }
