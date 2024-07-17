@@ -68,7 +68,7 @@ export const formatCode = (data: FormatData): FormatCode => {
 const getFormatCodeConfig = (
   code: string,
   format: FormatSupported,
-  parser: any
+  parser: unknown
 ): FormatCode => {
   try {
     return {
