@@ -80,7 +80,7 @@ figma.ui.onmessage = async (msg) => {
 
 async function applyTheme(theme: Theme) {
   const padding = 16;
-  const cornerRadius = 5;
+  const cornerRadius = 12;
 
   // Load all fonts before to create or update text nodes;
   for (const node of figma.currentPage.selection) {
@@ -150,6 +150,13 @@ async function applyTheme(theme: Theme) {
 
     const nodeFrame = figma.createFrame();
     nodeFrame.name = theme.format;
+    nodeFrame.fills = [{
+        blendMode: 'NORMAL',
+        color: theme.global.backgroundColor,
+        opacity: 0,
+        type: 'SOLID',
+        visible: true,
+      }]; // Transparent background
     nodeFrame.appendChild(nodeRectangle);
     nodeFrame.appendChild(nodeText);
 
