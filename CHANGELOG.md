@@ -4,7 +4,18 @@
 
 ### Added
 
-- Added support to GraphQL (with prettier formatter), Lua and Haskell;
+- Added font selection feature with Google Fonts loading for monospace fonts;
+- Added automatic language detection using Flourite;
+- Added new themes from Shiki;
+
+### Changed
+
+- Migrated from Webpack 5 to Vite 7 for build process;
+- Migrated from Highlight.js to Shiki 3 for syntax highlighting with fine-grained theme and language support;
+- Migrated from ESLint to oxlint for linting;
+- Upgraded Prettier to version 3.x;
+- Improved error display in UI;
+- Refactored code structure for improved readability and maintainability;
 
 ## [1.6.0] - 2023-04-13
 
