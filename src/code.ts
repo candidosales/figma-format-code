@@ -9,30 +9,53 @@ import { Theme } from './interface';
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, { width: 700, height: 480 });
 
-// Common monospace font families (case-insensitive partial matches)
-const monospaceFamilies = [
-  'mono', 'code', 'consol', 'courier', 'menlo', 'fira', 'jetbrains',
-  'source code', 'roboto mono', 'ubuntu mono', 'ibm plex mono', 'space mono',
-  'inconsolata', 'hack', 'droid sans mono', 'dejavu sans mono', 'anonymous',
-  'cascadia', 'sf mono', 'monaco', 'cousine', 'overpass mono', 'noto sans mono'
-];
-
-function isMonospaceFont(fontFamily: string): boolean {
-  const lower = fontFamily.toLowerCase();
-  return monospaceFamilies.some(pattern => lower.includes(pattern));
-}
+// Monospace fonts available on Google Fonts (exact family names)
+const googleMonospaceFonts = new Set([
+  'Anonymous Pro',
+  'Azeret Mono',
+  'B612 Mono',
+  'Cousine',
+  'Cutive Mono',
+  'DM Mono',
+  'Droid Sans Mono',
+  'Fira Code',
+  'Fira Mono',
+  'Fragment Mono',
+  'Geist Mono',
+  'IBM Plex Mono',
+  'Inconsolata',
+  'JetBrains Mono',
+  'Martian Mono',
+  'Nanum Gothic Coding',
+  'Noto Sans Mono',
+  'Nova Mono',
+  'Overpass Mono',
+  'Oxygen Mono',
+  'PT Mono',
+  'Red Hat Mono',
+  'Roboto Mono',
+  'Share Tech Mono',
+  'Source Code Pro',
+  'Space Mono',
+  'Spline Sans Mono',
+  'Ubuntu Mono',
+  'Ubuntu Sans Mono',
+  'VT323',
+  'Xanh Mono',
+]);
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'start') {
-    // Send available monospace fonts
+    // Send available fonts that exist on both Figma and Google Fonts
     const availableFonts = await figma.listAvailableFontsAsync();
-    const monospaceFonts = [...new Set(
-      availableFonts
-        .filter(f => isMonospaceFont(f.fontName.family))
-        .map(f => f.fontName.family)
-    )].sort();
+    const availableFamilies = new Set(availableFonts.map(f => f.fontName.family));
     
-    figma.ui.postMessage({ type: 'fonts', fonts: monospaceFonts });
+    // Filter to only fonts available in both Figma and Google Fonts
+    const fonts = [...googleMonospaceFonts]
+      .filter(font => availableFamilies.has(font))
+      .sort();
+    
+    figma.ui.postMessage({ type: 'fonts', fonts });
     
     // Send selected text
     for (const node of figma.currentPage.selection) {

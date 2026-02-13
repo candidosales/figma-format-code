@@ -162,21 +162,20 @@ button {
 #original-error {
   background: #fff3cd;
   color: #856404;
-  position: absolute;
   bottom: 0px;
   overflow: auto;
   width: 100%;
-  box-shadow: 0px -3px 1px -2px rgba(0,0,0,.2), 0px -2px 2px 0 rgba(0,0,0,.14), 0 1px 6px 0 rgba(0,0,0,.12);
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
   border-color: #ffeeba;
   opacity: 0;
   display:none;
+  padding: $global-gutter;
   &.show-error {
     opacity: 1;
     bottom: 20px;
     transition: all 0.3s ease-in-out;
-    display: inline;
+    display: inline-block;
   }
   pre {
     margin: 0;
