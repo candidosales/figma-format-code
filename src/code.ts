@@ -9,11 +9,35 @@ import { Theme } from './interface';
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, { width: 700, height: 480 });
 
+// Common monospace font families (case-insensitive partial matches)
+const monospaceFamilies = [
+  'mono', 'code', 'consol', 'courier', 'menlo', 'fira', 'jetbrains',
+  'source code', 'roboto mono', 'ubuntu mono', 'ibm plex mono', 'space mono',
+  'inconsolata', 'hack', 'droid sans mono', 'dejavu sans mono', 'anonymous',
+  'cascadia', 'sf mono', 'monaco', 'cousine', 'overpass mono', 'noto sans mono'
+];
+
+function isMonospaceFont(fontFamily: string): boolean {
+  const lower = fontFamily.toLowerCase();
+  return monospaceFamilies.some(pattern => lower.includes(pattern));
+}
+
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'start') {
+    // Send available monospace fonts
+    const availableFonts = await figma.listAvailableFontsAsync();
+    const monospaceFonts = [...new Set(
+      availableFonts
+        .filter(f => isMonospaceFont(f.fontName.family))
+        .map(f => f.fontName.family)
+    )].sort();
+    
+    figma.ui.postMessage({ type: 'fonts', fonts: monospaceFonts });
+    
+    // Send selected text
     for (const node of figma.currentPage.selection) {
       if (node.type === 'TEXT') {
-        figma.ui.postMessage({ textCode: node.characters });
+        figma.ui.postMessage({ type: 'text', textCode: node.characters });
       }
     }
   }

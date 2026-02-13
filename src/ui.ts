@@ -19,9 +19,11 @@ const $buttonApply = document.getElementById('button-apply')!;
 const $buttonPreview = document.getElementById('button-preview')!;
 const $selectFormat = document.getElementById('select-format')!;
 const $selectTheme = document.getElementById('select-theme')!;
+const $selectFont = document.getElementById('select-font') as HTMLSelectElement;
 
 let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
 let theme = ($selectTheme as HTMLInputElement).value as ShikiTheme;
+let fontFamily = $selectFont.value;
 let appliedTheme: Theme;
 
 // Start
@@ -60,11 +62,47 @@ $selectTheme.onchange = () => {
   formatHighlightCode();
 };
 
+$selectFont.onchange = () => {
+  updateValues();
+  formatHighlightCode();
+};
+
+function updatePreviewFont() {
+  const pre = $previewContent.querySelector('pre');
+  const code = $previewContent.querySelector('code');
+  const fontStyle = `"${fontFamily}", monospace`;
+  
+  if (pre) pre.style.fontFamily = fontStyle;
+  if (code) code.style.fontFamily = fontStyle;
+}
+
 // Messages Code -> UI
 onmessage = (event) => {
   const message = event.data.pluginMessage;
-  $originalContent.innerHTML = escapeHtml(message.textCode);
+  
+  if (message.type === 'text') {
+    $originalContent.innerHTML = escapeHtml(message.textCode);
+  }
+  
+  if (message.type === 'fonts') {
+    populateFontSelect(message.fonts);
+  }
 };
+
+function populateFontSelect(fonts: string[]) {
+  $selectFont.innerHTML = '';
+  fonts.forEach((font) => {
+    const option = document.createElement('option');
+    option.value = font;
+    option.textContent = font;
+    $selectFont.appendChild(option);
+  });
+  
+  // Set default and update variable
+  if (fonts.length > 0) {
+    fontFamily = fonts[0];
+  }
+}
 
 async function formatHighlightCode(): Promise<void> {
   if (format) {
@@ -78,6 +116,7 @@ async function formatHighlightCode(): Promise<void> {
       try {
         const highlightedHtml = await highlight(result.formatCode, format, theme);
         $previewContent.innerHTML = highlightedHtml;
+        updatePreviewFont();
         hideParserError();
       } catch (e) {
         console.error('[Format Code Error]', e instanceof Error ? e.message : e);
@@ -92,6 +131,7 @@ function updateValues() {
   format = (document.getElementById('select-format') as HTMLInputElement)
     .value as FormatSupported;
   theme = (document.getElementById('select-theme') as HTMLInputElement).value as ShikiTheme;
+  fontFamily = (document.getElementById('select-font') as HTMLInputElement).value;
 }
 
 function showParserError(errorMessage: string): void {
@@ -121,7 +161,7 @@ function applyTheme(): Theme {
       global: {
         color: { r: 0, g: 0, b: 0 },
         backgroundColor: { r: 1, g: 1, b: 1 },
-        fontName: { family: 'Roboto', style: 'Regular' },
+        fontName: { family: fontFamily, style: 'Regular' },
       },
     };
   }
@@ -173,7 +213,7 @@ function applyTheme(): Theme {
         visible: true,
       },
       fontName: {
-        family: 'Roboto',
+        family: fontFamily,
         style: getFontWeight(computedStyle.fontWeight),
       },
     });
@@ -190,7 +230,7 @@ function applyTheme(): Theme {
       color: calculateRGB(codeStyle.color),
       backgroundColor: backgroundColor,
       fontName: {
-        family: 'Roboto',
+        family: fontFamily,
         style: 'Regular',
       },
     },
