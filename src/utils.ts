@@ -18,6 +18,9 @@ export const revertEscapeHtml = (safeHtml: string): string => {
 
 export const calculateRGB = (color: string): RGB => {
   const rgbColor = color.match(/\d+/g);
+  if (!rgbColor || rgbColor.length < 3) {
+    return { r: 0, g: 0, b: 0 };
+  }
   return {
     r: parseInt(rgbColor[0]) / 255,
     g: parseInt(rgbColor[1]) / 255,

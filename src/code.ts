@@ -80,7 +80,7 @@ async function applyTheme(theme: Theme) {
           nodePaint.fontName
         );
       } catch (e) {
-        console.error('[Format Code Error]', e.message);
+        console.error('[Format Code Error]', e instanceof Error ? e.message : e);
       }
     });
 
@@ -117,7 +117,7 @@ async function applyTheme(theme: Theme) {
 
     figma.viewport.scrollAndZoomIntoView([nodeFrame]);
   } catch (e) {
-    console.error('[Format Code Error]', e.message);
+    console.error('[Format Code Error]', e instanceof Error ? e.message : e);
   }
 
   figma.closePlugin();

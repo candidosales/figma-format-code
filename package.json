@@ -4,16 +4,19 @@
   "description": "A Figma plugin designed to allow you to format and syntax highlighting code",
   "main": "code.js",
   "scripts": {
-    "dev": "webpack serve --mode=development",
-    "build": "webpack --mode=production",
+    "dev": "concurrently -n plugin,ui \"npm run build:plugin -- --watch\" \"vite\"",
+    "build": "npm run build:ui && npm run build:plugin",
+    "build:plugin": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es6",
+    "build:ui": "vite build",
+    "preview": "vite preview",
+    "tsc": "tsc --noEmit",
     "prettier": "prettier --write ./**/*",
-    "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
-    "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix ."
+    "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules --ignore-pattern vite.config.ts .",
+    "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --ignore-pattern vite.config.ts --fix ."
   },
   "author": "Candido Sales Gomes <candidosg@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@effortlessmotion/html-webpack-inline-source-plugin": "^1.0.3",
     "highlight.js": "^11.7.0",
     "prettier": "^2.8.7"
   },
@@ -22,20 +25,13 @@
     "@figma/plugin-typings": "^1.97.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^6.7.3",
+    "concurrently": "^9.1.0",
+    "esbuild": "^0.24.0",
     "eslint": "^8.57.0",
-    "html-webpack-plugin": "^5.5.0",
-    "inline-chunk-html-plugin": "^1.1.1",
     "sass": "^1.77.8",
-    "sass-loader": "^13.2.2",
-    "style-loader": "^3.3.2",
-    "ts-loader": "^9.4.2",
     "typescript": "^5.5.3",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.79.0",
-    "webpack-cli": "^5.0.1",
-    "webpack-dev-server": "^4.13.2"
+    "vite": "^6.0.0",
+    "vite-plugin-singlefile": "^2.0.0"
   },
   "eslintConfig": {
     "extends": [

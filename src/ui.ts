@@ -11,15 +11,15 @@ import {
   revertEscapeHtml,
 } from './utils';
 
-const $compare = document.getElementById('compare');
-const $originalContent = document.getElementById('original-content');
-const $originalError = document.getElementById('original-error');
-const $previewContent = document.getElementById('preview-content');
+const $compare = document.getElementById('compare')!;
+const $originalContent = document.getElementById('original-content')!;
+const $originalError = document.getElementById('original-error')!;
+const $previewContent = document.getElementById('preview-content')!;
 
-const $buttonApply = document.getElementById('button-apply');
-const $buttonPreview = document.getElementById('button-preview');
-const $selectFormat = document.getElementById('select-format');
-const $selectTheme = document.getElementById('select-theme');
+const $buttonApply = document.getElementById('button-apply')!;
+const $buttonPreview = document.getElementById('button-preview')!;
+const $selectFormat = document.getElementById('select-format')!;
+const $selectTheme = document.getElementById('select-theme')!;
 
 let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
 let theme = ($selectTheme as HTMLInputElement).value;
