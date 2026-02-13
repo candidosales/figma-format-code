@@ -7,7 +7,7 @@
   "editorType": ["figma", "figjam", "dev", "slides", "buzz"],
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["*"],
-    "reasoning": "Internet access for local development."
+    "allowedDomains": ["https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+    "reasoning": "Load Google Fonts for code preview styling."
   }
 }

@@ -26,6 +26,29 @@ let theme = ($selectTheme as HTMLInputElement).value as ShikiTheme;
 let fontFamily = $selectFont.value;
 let appliedTheme: Theme;
 
+// Track loaded fonts to avoid duplicate loading
+const loadedFonts = new Set<string>();
+
+// Load font from Google Fonts
+async function loadGoogleFont(fontName: string): Promise<void> {
+  if (loadedFonts.has(fontName)) return;
+  
+  // Convert font name to Google Fonts URL format
+  const fontParam = fontName.replace(/ /g, '+');
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${fontParam}:wght@400;700&display=swap`;
+  
+  return new Promise((resolve, reject) => {
+    link.onload = () => {
+      loadedFonts.add(fontName);
+      resolve();
+    };
+    link.onerror = () => reject(new Error(`Failed to load font: ${fontName}`));
+    document.head.appendChild(link);
+  });
+}
+
 // Start
 
 parent.postMessage(
@@ -62,8 +85,9 @@ $selectTheme.onchange = () => {
   formatHighlightCode();
 };
 
-$selectFont.onchange = () => {
+$selectFont.onchange = async () => {
   updateValues();
+  await loadGoogleFont(fontFamily);
   formatHighlightCode();
 };
 
@@ -89,7 +113,7 @@ onmessage = (event) => {
   }
 };
 
-function populateFontSelect(fonts: string[]) {
+async function populateFontSelect(fonts: string[]) {
   $selectFont.innerHTML = '';
   fonts.forEach((font) => {
     const option = document.createElement('option');
@@ -101,6 +125,8 @@ function populateFontSelect(fonts: string[]) {
   // Set default and update variable
   if (fonts.length > 0) {
     fontFamily = fonts[0];
+    await loadGoogleFont(fontFamily);
+    formatHighlightCode();
   }
 }
 
