@@ -17,14 +17,30 @@ import parserYaml from 'prettier/parser-yaml';
  * formatCode - format the code
  */
 export const formatCode = (data: FormatData): FormatCode => {
-  if (data) {
-    switch (data.format) {
+  if (!data) {
+    return {
+      formatCode: '',
+      error: 'No data provided',
+    };
+  }
+  
+  switch (data.format) {
       case FormatSupported.CSS:
-      case FormatSupported.LESS:
-      case FormatSupported.SCSS:
         return getFormatCodeConfig(
           data.code,
           FormatSupported.CSS,
+          parserPostcss
+        );
+      case FormatSupported.LESS:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.LESS,
+          parserPostcss
+        );
+      case FormatSupported.SCSS:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.SCSS,
           parserPostcss
         );
       case FormatSupported.JSON:
@@ -61,7 +77,6 @@ export const formatCode = (data: FormatData): FormatCode => {
           formatCode: data.code,
           error: '',
         };
-    }
   }
 };
 
@@ -79,18 +94,19 @@ const getFormatCodeConfig = (
       error: '',
     };
   } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
     parent.postMessage(
       {
         pluginMessage: {
           type: 'notify',
-          message: e.message,
+          message: errorMessage,
         },
       },
       '*'
     );
     return {
       formatCode: '',
-      error: e.message,
+      error: errorMessage,
     };
   }
 };

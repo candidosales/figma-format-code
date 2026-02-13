@@ -9,11 +9,58 @@ import { Theme } from './interface';
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__, { width: 700, height: 480 });
 
+// Monospace fonts available on Google Fonts (exact family names)
+const googleMonospaceFonts = new Set([
+  'Anonymous Pro',
+  'Azeret Mono',
+  'B612 Mono',
+  'Cousine',
+  'Cutive Mono',
+  'DM Mono',
+  'Droid Sans Mono',
+  'Fira Code',
+  'Fira Mono',
+  'Fragment Mono',
+  'Geist Mono',
+  'IBM Plex Mono',
+  'Inconsolata',
+  'JetBrains Mono',
+  'Martian Mono',
+  'Nanum Gothic Coding',
+  'Noto Sans Mono',
+  'Nova Mono',
+  'Overpass Mono',
+  'Oxygen Mono',
+  'PT Mono',
+  'Red Hat Mono',
+  'Roboto Mono',
+  'Share Tech Mono',
+  'Source Code Pro',
+  'Space Mono',
+  'Spline Sans Mono',
+  'Ubuntu Mono',
+  'Ubuntu Sans Mono',
+  'VT323',
+  'Xanh Mono',
+]);
+
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'start') {
+    // Send available fonts that exist on both Figma and Google Fonts
+    const availableFonts = await figma.listAvailableFontsAsync();
+    const availableFamilies = new Set(availableFonts.map(f => f.fontName.family));
+    
+    // Filter to only fonts available in both Figma and Google Fonts
+    const fonts = [...googleMonospaceFonts]
+      .filter(font => availableFamilies.has(font))
+      .sort();
+    
+    figma.ui.postMessage({ type: 'fonts', fonts });
+    
+    // Send selected text
     for (const node of figma.currentPage.selection) {
       if (node.type === 'TEXT') {
-        figma.ui.postMessage({ textCode: node.characters });
+        figma.ui.postMessage({ type: 'text', textCode: node.characters });
       }
     }
   }
@@ -80,7 +127,7 @@ async function applyTheme(theme: Theme) {
           nodePaint.fontName
         );
       } catch (e) {
-        console.error('[Format Code Error]', e.message);
+        console.error('[Format Code Error]', e instanceof Error ? e.message : e);
       }
     });
 
@@ -117,7 +164,7 @@ async function applyTheme(theme: Theme) {
 
     figma.viewport.scrollAndZoomIntoView([nodeFrame]);
   } catch (e) {
-    console.error('[Format Code Error]', e.message);
+    console.error('[Format Code Error]', e instanceof Error ? e.message : e);
   }
 
   figma.closePlugin();

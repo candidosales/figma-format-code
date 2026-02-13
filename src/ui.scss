@@ -1,96 +1,8 @@
 @use 'sass:math';
 @import './styles/figma.css';
 
-//// Highlight.js - Theme
-////// Highlight.js - CSS
+// Shiki uses inline styles for syntax highlighting, no CSS theme imports needed
 
-.theme__a11y-dark {
-  @import './styles/highlight.js/_a11y-dark';
-}
-
-.theme__a11y-light {
-  @import './styles/highlight.js/_a11y-light';
-}
-
-.theme__atom-one-dark {
-  @import './styles/highlight.js/_atom-one-dark';
-}
-
-.theme__atom-one-light {
-  @import './styles/highlight.js/_atom-one-light';
-}
-
-.theme__default {
-  @import './styles/highlight.js/default';
-}
-
-.theme__dracula {
-  @import './styles/highlight.js/dracula';
-}
-
-.theme__ocean {
-  @import './styles/highlight.js/ocean';
-}
-
-.theme__paraiso-dark {
-  @import './styles/highlight.js/paraiso-dark';
-}
-
-.theme__paraiso-light {
-  @import './styles/highlight.js/paraiso-light';
-}
-
-.theme__solarized-dark {
-  @import './styles/highlight.js/solarized-dark';
-}
-
-.theme__solarized-light {
-  @import './styles/highlight.js/solarized-light';
-}
-
-.theme__vs {
-  @import './styles/highlight.js/vs';
-}
-
-.theme__vs2015 {
-  @import './styles/highlight.js/vs2015';
-}
-
-.theme__xcode {
-  @import './styles/highlight.js/xcode';
-}
-
-.theme__android-studio {
-  @import './styles/highlight.js/android-studio';
-}
-
-.theme__github {
-  @import './styles/highlight.js/github';
-}
-
-.theme__github-dark {
-  @import './styles/highlight.js/github-dark';
-}
-
-.theme__material {
-  @import './styles/highlight.js/material';
-}
-
-.theme__material-darker {
-  @import './styles/highlight.js/material-darker';
-}
-
-.theme__material-palenight {
-  @import './styles/highlight.js/material-palenight';
-}
-
-.theme__monokai-sublime {
-  @import './styles/highlight.js/monokai-sublime';
-}
-
-.theme__xt256 {
-  @import './styles/highlight.js/xt256';
-}
 /*Variables*/
 
 $global-gutter: 16px;
@@ -108,6 +20,9 @@ body {
 
 body {
   padding: $global-gutter;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 button {
@@ -116,10 +31,12 @@ button {
 
 .divider {
   margin: $global-gutter 0;
+  flex-shrink: 0;
 }
 .form {
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;
 
   select {
     display: block;
@@ -147,14 +64,14 @@ button {
 .field {
   margin-right: $global-gutter;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   label {
     color: rgba(0, 0, 0, 0.8);
     font-weight: 600;
     font-size: 11px;
     line-height: 16px;
-    width: 200px;
+    margin-bottom: 4px;
   }
 }
 
@@ -162,6 +79,9 @@ button {
   display: flex;
   flex-direction: row;
   position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .original {
@@ -175,12 +95,36 @@ button {
 .original,
 .preview {
   width: 48.5%;
-  height: 350px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   pre {
     width: 100%;
+    flex: 1;
     display: block;
     overflow: auto;
     border-radius: 5px;
+    margin: 0;
+    padding: $global-gutter;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
+    
+    // Shiki pre styles
+    &.shiki {
+      font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: $global-gutter;
+      code {
+        display: block;
+      }
+    }
+    
+    code {
+      font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      white-space: pre;
+    }
   }
   p {
     color: rgba(0, 0, 0, 0.8);
@@ -188,34 +132,50 @@ button {
     font-size: 11px;
     line-height: 16px;
     margin-top: 0;
+    flex-shrink: 0;
   }
 }
 
-#original-content,
+.preview pre {
+    padding: 0
+}
+
+#original-content {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
 #preview-content {
   width: 100%;
-  height: 300px;
+  height: 100%;
   overflow: auto;
+  
+  // When Shiki renders, it creates a pre.shiki inside
+  pre.shiki {
+    height: 100%;
+    margin: 0;
+    overflow: auto;
+  }
 }
 
 #original-error {
   background: #fff3cd;
   color: #856404;
-  position: absolute;
   bottom: 0px;
   overflow: auto;
   width: 100%;
-  box-shadow: 0px -3px 1px -2px rgba(0,0,0,.2), 0px -2px 2px 0 rgba(0,0,0,.14), 0 1px 6px 0 rgba(0,0,0,.12);
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
   border-color: #ffeeba;
   opacity: 0;
   display:none;
+  padding: $global-gutter;
   &.show-error {
     opacity: 1;
     bottom: 20px;
     transition: all 0.3s ease-in-out;
-    display: inline;
+    display: inline-block;
   }
   pre {
     margin: 0;
@@ -231,7 +191,9 @@ button {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  justify-content: flex-end;  
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding-top: $global-gutter;
   button {
     margin-left: $global-gutter;
   }

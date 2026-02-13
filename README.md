@@ -2,9 +2,15 @@
 
 # Format Code
 
-Format Code makes it easy to format code snippets and add a theme for syntax highlight
+Format Code makes it easy to format code snippets and add a theme for syntax highlight.
 
-More features coming soon, including support for more languages and improvements in usability.
+## Features
+
+- Syntax highlighting powered by Shiki;
+- 23 beautiful themes to choose from;
+- Font selection with Google Fonts support for monospace fonts;
+- Automatic language detection;
+- Code formatting with Prettier;
 
 Design & Developed by Cândido Sales.
 
@@ -36,34 +42,36 @@ Design & Developed by Cândido Sales.
 
 ## Themes supported
 
-- A 11 Y Dark;
-- A 11 Y Light;
-- Android Studio;
-- Atom One Dark;
-- Atom One Light;
-- Default;
+- Ayu Dark;
+- Catppuccin Latte;
+- Catppuccin Mocha;
+- Dark Plus;
 - Dracula;
-- Ocean;
-- Github;
-- Github Dark;
-- Material;
+- GitHub Dark;
+- GitHub Light;
+- Light Plus;
 - Material Darker;
+- Material Ocean;
 - Material Palenight;
-- Monokai Sublime;
-- Paraiso Dark;
-- Paraiso Light;
+- Min Dark;
+- Min Light;
+- Monokai;
+- Nord;
+- One Dark Pro;
+- One Light;
+- Rose Pine;
 - Solarized Dark;
 - Solarized Light;
-- Vs;
-- Vs 2015;
-- Xcode;
-- XT 256;
+- Tokyo Night;
+- Vitesse Dark;
+- Vitesse Light;
 
 ## 📚 Reference
 
 - https://github.com/figma/plugin-samples
 - https://github.com/yuanqing/create-figma-plugin
-- https://github.com/highlightjs/highlight.js
+- https://github.com/shikijs/shiki
+- https://github.com/teknologi-umum/flourite
 - https://github.com/thomas-lowry/themer
 - https://github.com/oriziv/figma-sass-less-plugin
 - https://prettier.io/docs/en/options.html#parser
@@ -97,4 +105,4 @@ If you want to support Format Code, you can ☕ [**buy a coffee here**](https://
 
 ## ⚠️ Copyright and license
 
-Code and documentation copyright 2020-2030 the [Authors](https://github.com/candidosales/figma-format-code/graphs/contributors) and Code released under the [MIT License](https://github.com/candidosales/figma-format-code/blob/master/LICENSE). Docs released under [Creative Commons](https://creativecommons.org/licenses/by/3.0/).
+Code and documentation copyright 2026-2036 the [Authors](https://github.com/candidosales/figma-format-code/graphs/contributors) and Code released under the [MIT License](https://github.com/candidosales/figma-format-code/blob/master/LICENSE). Docs released under [Creative Commons](https://creativecommons.org/licenses/by/3.0/).
