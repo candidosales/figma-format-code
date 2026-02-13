@@ -4,6 +4,7 @@ import { NodePaint, Theme } from './interface';
 import { FormatSupported } from './constants';
 import { formatCode } from './format-code';
 import { highlight, ShikiTheme } from './highlight';
+import { detectLanguage } from './detect-language';
 import {
   calculateRGB,
   escapeHtml,
@@ -60,8 +61,6 @@ parent.postMessage(
   '*'
 );
 
-formatHighlightCode();
-
 // Listeners
 $buttonApply.onclick = () => {
   parent.postMessage(
@@ -101,11 +100,28 @@ function updatePreviewFont() {
 }
 
 // Messages Code -> UI
-onmessage = (event) => {
+onmessage = async (event) => {
   const message = event.data.pluginMessage;
   
   if (message.type === 'text') {
-    $originalContent.innerHTML = escapeHtml(message.textCode);
+    const textCode = message.textCode;
+    $originalContent.innerHTML = escapeHtml(textCode);
+    
+    // Auto-detect language and update select
+    const detectedFormat = detectLanguage(textCode);
+    console.log('[Format Code] Detected format:', detectedFormat);
+    if (detectedFormat) {
+      const selectEl = $selectFormat as HTMLSelectElement;
+      selectEl.value = detectedFormat;
+      format = detectedFormat;
+      console.log('[Format Code] Selected value:', selectEl.value);
+    }
+    
+    // Load font and trigger preview
+    if (fontFamily) {
+      await loadGoogleFont(fontFamily);
+    }
+    formatHighlightCode();
   }
   
   if (message.type === 'fonts') {
@@ -126,7 +142,10 @@ async function populateFontSelect(fonts: string[]) {
   if (fonts.length > 0) {
     fontFamily = fonts[0];
     await loadGoogleFont(fontFamily);
-    formatHighlightCode();
+    // Re-render if text is already loaded
+    if ($originalContent.textContent) {
+      formatHighlightCode();
+    }
   }
 }
 
