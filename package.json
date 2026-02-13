@@ -1,6 +1,6 @@
 {
   "name": "Format-Code",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "A Figma plugin designed to allow you to format and syntax highlighting code",
   "main": "code.js",
   "scripts": {
@@ -9,51 +9,33 @@
     "build:plugin": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es6",
     "build:ui": "vite build",
     "preview": "vite preview",
-    "tsc": "tsc --noEmit",
+    "tsc": "oxlint --type-aware --type-check",
     "prettier": "prettier --write ./**/*",
-    "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules --ignore-pattern vite.config.ts .",
-    "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --ignore-pattern vite.config.ts --fix ."
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix ."
   },
   "author": "Candido Sales Gomes <candidosg@gmail.com>",
   "license": "MIT",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "pnpm run lint"
+  },
   "dependencies": {
     "flourite": "^1.3.0",
     "prettier": "^2.8.7",
     "shiki": "^3.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@figma/eslint-plugin-figma-plugins": "^0.15.0",
     "@figma/plugin-typings": "^1.97.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
     "concurrently": "^9.1.0",
     "esbuild": "^0.24.0",
-    "eslint": "^8.57.0",
+    "oxlint": "^1.47.0",
+    "oxlint-tsgolint": "^0.12.2",
     "sass": "^1.77.8",
     "typescript": "^5.5.3",
+    "typescript-eslint": "^8.55.0",
     "vite": "^6.0.0",
     "vite-plugin-singlefile": "^2.0.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:@figma/figma-plugins/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "project": "./tsconfig.json"
-    },
-    "root": true,
-    "rules": {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_",
-          "caughtErrorsIgnorePattern": "^_"
-        }
-      ]
-    }
   }
 }
