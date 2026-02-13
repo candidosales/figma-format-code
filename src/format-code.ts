@@ -26,11 +26,21 @@ export const formatCode = (data: FormatData): FormatCode => {
   
   switch (data.format) {
       case FormatSupported.CSS:
-      case FormatSupported.LESS:
-      case FormatSupported.SCSS:
         return getFormatCodeConfig(
           data.code,
           FormatSupported.CSS,
+          parserPostcss
+        );
+      case FormatSupported.LESS:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.LESS,
+          parserPostcss
+        );
+      case FormatSupported.SCSS:
+        return getFormatCodeConfig(
+          data.code,
+          FormatSupported.SCSS,
           parserPostcss
         );
       case FormatSupported.JSON:

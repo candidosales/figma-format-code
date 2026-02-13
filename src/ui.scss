@@ -1,96 +1,8 @@
 @use 'sass:math';
 @import './styles/figma.css';
 
-//// Highlight.js - Theme
-////// Highlight.js - CSS
+// Shiki uses inline styles for syntax highlighting, no CSS theme imports needed
 
-.theme__a11y-dark {
-  @import './styles/highlight.js/_a11y-dark';
-}
-
-.theme__a11y-light {
-  @import './styles/highlight.js/_a11y-light';
-}
-
-.theme__atom-one-dark {
-  @import './styles/highlight.js/_atom-one-dark';
-}
-
-.theme__atom-one-light {
-  @import './styles/highlight.js/_atom-one-light';
-}
-
-.theme__default {
-  @import './styles/highlight.js/default';
-}
-
-.theme__dracula {
-  @import './styles/highlight.js/dracula';
-}
-
-.theme__ocean {
-  @import './styles/highlight.js/ocean';
-}
-
-.theme__paraiso-dark {
-  @import './styles/highlight.js/paraiso-dark';
-}
-
-.theme__paraiso-light {
-  @import './styles/highlight.js/paraiso-light';
-}
-
-.theme__solarized-dark {
-  @import './styles/highlight.js/solarized-dark';
-}
-
-.theme__solarized-light {
-  @import './styles/highlight.js/solarized-light';
-}
-
-.theme__vs {
-  @import './styles/highlight.js/vs';
-}
-
-.theme__vs2015 {
-  @import './styles/highlight.js/vs2015';
-}
-
-.theme__xcode {
-  @import './styles/highlight.js/xcode';
-}
-
-.theme__android-studio {
-  @import './styles/highlight.js/android-studio';
-}
-
-.theme__github {
-  @import './styles/highlight.js/github';
-}
-
-.theme__github-dark {
-  @import './styles/highlight.js/github-dark';
-}
-
-.theme__material {
-  @import './styles/highlight.js/material';
-}
-
-.theme__material-darker {
-  @import './styles/highlight.js/material-darker';
-}
-
-.theme__material-palenight {
-  @import './styles/highlight.js/material-palenight';
-}
-
-.theme__monokai-sublime {
-  @import './styles/highlight.js/monokai-sublime';
-}
-
-.theme__xt256 {
-  @import './styles/highlight.js/xt256';
-}
 /*Variables*/
 
 $global-gutter: 16px;
@@ -108,6 +20,9 @@ body {
 
 body {
   padding: $global-gutter;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 button {
@@ -116,10 +31,12 @@ button {
 
 .divider {
   margin: $global-gutter 0;
+  flex-shrink: 0;
 }
 .form {
   display: flex;
   flex-direction: row;
+  flex-shrink: 0;
 
   select {
     display: block;
@@ -162,6 +79,9 @@ button {
   display: flex;
   flex-direction: row;
   position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .original {
@@ -175,12 +95,36 @@ button {
 .original,
 .preview {
   width: 48.5%;
-  height: 350px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   pre {
     width: 100%;
+    flex: 1;
     display: block;
     overflow: auto;
     border-radius: 5px;
+    margin: 0;
+    padding: $global-gutter;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
+    
+    // Shiki pre styles
+    &.shiki {
+      font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: $global-gutter;
+      code {
+        display: block;
+      }
+    }
+    
+    code {
+      font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      white-space: pre;
+    }
   }
   p {
     color: rgba(0, 0, 0, 0.8);
@@ -188,14 +132,31 @@ button {
     font-size: 11px;
     line-height: 16px;
     margin-top: 0;
+    flex-shrink: 0;
   }
 }
 
-#original-content,
+.preview pre {
+    padding: 0
+}
+
+#original-content {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
 #preview-content {
   width: 100%;
-  height: 300px;
+  height: 100%;
   overflow: auto;
+  
+  // When Shiki renders, it creates a pre.shiki inside
+  pre.shiki {
+    height: 100%;
+    margin: 0;
+    overflow: auto;
+  }
 }
 
 #original-error {
@@ -231,7 +192,9 @@ button {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  justify-content: flex-end;  
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding-top: $global-gutter;
   button {
     margin-left: $global-gutter;
   }

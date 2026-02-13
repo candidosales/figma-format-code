@@ -3,7 +3,7 @@ import './ui.scss';
 import { NodePaint, Theme } from './interface';
 import { FormatSupported } from './constants';
 import { formatCode } from './format-code';
-import { highlight } from './highlight';
+import { highlight, ShikiTheme } from './highlight';
 import {
   calculateRGB,
   escapeHtml,
@@ -11,7 +11,6 @@ import {
   revertEscapeHtml,
 } from './utils';
 
-const $compare = document.getElementById('compare')!;
 const $originalContent = document.getElementById('original-content')!;
 const $originalError = document.getElementById('original-error')!;
 const $previewContent = document.getElementById('preview-content')!;
@@ -22,7 +21,7 @@ const $selectFormat = document.getElementById('select-format')!;
 const $selectTheme = document.getElementById('select-theme')!;
 
 let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
-let theme = ($selectTheme as HTMLInputElement).value;
+let theme = ($selectTheme as HTMLInputElement).value as ShikiTheme;
 let appliedTheme: Theme;
 
 // Start
@@ -58,7 +57,6 @@ $buttonPreview.onclick = () => {
 
 $selectTheme.onchange = () => {
   updateValues();
-  updateTheme();
   formatHighlightCode();
 };
 
@@ -68,9 +66,7 @@ onmessage = (event) => {
   $originalContent.innerHTML = escapeHtml(message.textCode);
 };
 
-function formatHighlightCode(): void {
-  let formattedCodeHighlightSintax = '';
-
+async function formatHighlightCode(): Promise<void> {
   if (format) {
     const result = formatCode({ format, code: $originalContent.textContent });
 
@@ -79,34 +75,23 @@ function formatHighlightCode(): void {
     }
 
     if (result.formatCode !== '') {
-      formattedCodeHighlightSintax = highlight.highlight(result.formatCode, {
-        language: format,
-      }).value;
-      $previewContent.innerHTML = formattedCodeHighlightSintax;
-      hideParserError();
+      try {
+        const highlightedHtml = await highlight(result.formatCode, format, theme);
+        $previewContent.innerHTML = highlightedHtml;
+        hideParserError();
+      } catch (e) {
+        console.error('[Format Code Error]', e instanceof Error ? e.message : e);
+      }
     }
   }
 
-  updateTheme();
   appliedTheme = applyTheme();
-}
-
-function updateTheme() {
-  if (theme) {
-    $compare.classList.forEach((className) => {
-      if (className.startsWith('theme__')) {
-        $compare.classList.remove(className);
-      }
-    });
-
-    $compare.classList.add(`theme__${theme}`);
-  }
 }
 
 function updateValues() {
   format = (document.getElementById('select-format') as HTMLInputElement)
     .value as FormatSupported;
-  theme = (document.getElementById('select-theme') as HTMLInputElement).value;
+  theme = (document.getElementById('select-theme') as HTMLInputElement).value as ShikiTheme;
 }
 
 function showParserError(errorMessage: string): void {
@@ -124,65 +109,86 @@ function hideParserError(): void {
 }
 
 function applyTheme(): Theme {
-  let contentHTML = revertEscapeHtml($previewContent.innerHTML);
+  // Get the shiki pre > code element
+  const shikiPre = $previewContent.querySelector('pre.shiki');
+  const shikiCode = shikiPre?.querySelector('code');
+  
+  if (!shikiCode) {
+    return {
+      format,
+      nodePaints: [],
+      contentHTML: '',
+      global: {
+        color: { r: 0, g: 0, b: 0 },
+        backgroundColor: { r: 1, g: 1, b: 1 },
+        fontName: { family: 'Roboto', style: 'Regular' },
+      },
+    };
+  }
 
-  const allTags = $previewContent.getElementsByTagName('span');
+  // Get background color from shiki pre element
+  const preStyle = shikiPre ? window.getComputedStyle(shikiPre) : null;
+  const backgroundColor = preStyle 
+    ? calculateRGB(preStyle.backgroundColor) 
+    : { r: 1, g: 1, b: 1 };
+  
+  // Get the text content
+  const contentHTML = revertEscapeHtml(shikiCode.textContent || '');
 
-  // console.log('previewContent contentHTML', contentHTML);
-  // console.log('applyTheme innerText', previewContent.innerText);
-  // console.log('applyTheme all', allTags);
+  const allTags = shikiCode.getElementsByTagName('span');
 
   const nodePaints: Array<NodePaint> = [];
+  let currentIndex = 0;
+  
   for (let i = 0, max = allTags.length; i < max; i++) {
-    // console.log('==================================');
-    // console.log('i', i);
-
     const node = allTags[i];
-    const selector = `<span class="${node.classList.value}">`;
+    const nodeText = node.textContent || '';
+    
+    // Skip if this span contains other spans (nested)
+    if (node.querySelector('span')) {
+      continue;
+    }
 
-    // TODO - Issue: Span Nested
-    // TODO - Verify if exist span nested, if yes, jump for the next item
+    // Find the position in the plain text content
+    const startIndex = contentHTML.indexOf(nodeText, currentIndex);
+    if (startIndex === -1) continue;
+    
+    const endIndex = startIndex + nodeText.length;
+    currentIndex = endIndex;
 
-    // Calculate the index position of the content inside the HTML
-    const startIndex = contentHTML.indexOf(selector);
-    const endIndex = startIndex + (node.innerHTML.length - 1);
-
-    // Remove the highlight JS HTML Tag
-    const regexStart = /<\/?span[^>]*>/i;
-    contentHTML = contentHTML.replace(regexStart, '');
-
-    const regexEnd = /<\/span>/i;
-    contentHTML = contentHTML.replace(regexEnd, '');
-
+    // Get color from computed style (works with inline styles)
+    const computedStyle = window.getComputedStyle(node);
+    
     nodePaints.push({
-      content: node.innerHTML,
+      content: nodeText,
       range: {
         start: startIndex,
-        end: endIndex + 1, // end (exclusive) - https://www.figma.com/plugin-docs/api/TextNode/#setrangetextstyleid
+        end: endIndex, // end (exclusive)
       },
       paint: {
         blendMode: 'NORMAL',
-        color: calculateRGB(window.getComputedStyle(node).color),
+        color: calculateRGB(computedStyle.color),
         opacity: 1,
         type: 'SOLID',
         visible: true,
       },
       fontName: {
         family: 'Roboto',
-        style: getFontWeight(window.getComputedStyle(node).fontWeight),
+        style: getFontWeight(computedStyle.fontWeight),
       },
     });
   }
+
+  // Get default text color from code element
+  const codeStyle = window.getComputedStyle(shikiCode);
 
   return {
     format,
     nodePaints: nodePaints,
     contentHTML: contentHTML,
     global: {
-      color: calculateRGB(window.getComputedStyle($previewContent).color),
-      backgroundColor: calculateRGB(
-        window.getComputedStyle($previewContent).backgroundColor
-      ),
+      color: calculateRGB(codeStyle.color),
+      backgroundColor: backgroundColor,
       fontName: {
         family: 'Roboto',
         style: 'Regular',

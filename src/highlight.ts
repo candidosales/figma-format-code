@@ -1,51 +1,142 @@
-////// Highlight.js - Core
+// Shiki - Syntax Highlighter with Fine-grained Bundle
+import { createHighlighterCore, HighlighterCore } from 'shiki/core';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
-import hljs from 'highlight.js/lib/core'; // Reduce the footprint
+// Themes - Fine-grained imports (no WASM, smaller bundle)
+import themeDracula from '@shikijs/themes/dracula';
+import themeGithubDark from '@shikijs/themes/github-dark';
+import themeGithubLight from '@shikijs/themes/github-light';
+import themeDarkPlus from '@shikijs/themes/dark-plus';
+import themeLightPlus from '@shikijs/themes/light-plus';
+import themeMaterialDarker from '@shikijs/themes/material-theme-darker';
+import themeMaterialOcean from '@shikijs/themes/material-theme-ocean';
+import themeMaterialPalenight from '@shikijs/themes/material-theme-palenight';
+import themeMonokai from '@shikijs/themes/monokai';
+import themeNord from '@shikijs/themes/nord';
+import themeOneDarkPro from '@shikijs/themes/one-dark-pro';
+import themeOneLight from '@shikijs/themes/one-light';
+import themeSolarizedDark from '@shikijs/themes/solarized-dark';
+import themeSolarizedLight from '@shikijs/themes/solarized-light';
+import themeMinDark from '@shikijs/themes/min-dark';
+import themeMinLight from '@shikijs/themes/min-light';
+import themeCatppuccinMocha from '@shikijs/themes/catppuccin-mocha';
+import themeCatppuccinLatte from '@shikijs/themes/catppuccin-latte';
+import themeVitesseDark from '@shikijs/themes/vitesse-dark';
+import themeVitesseLight from '@shikijs/themes/vitesse-light';
+import themeTokyoNight from '@shikijs/themes/tokyo-night';
+import themeRosePine from '@shikijs/themes/rose-pine';
+import themeAyuDark from '@shikijs/themes/ayu-dark';
 
-import hljsCSS from 'highlight.js/lib/languages/css';
-import hljsJavascript from 'highlight.js/lib/languages/javascript';
-import hljsJava from 'highlight.js/lib/languages/java';
-import hljsJSON from 'highlight.js/lib/languages/json';
-import hljsHaskell from 'highlight.js/lib/languages/haskell';
-import hljsLess from 'highlight.js/lib/languages/less';
-import hljsLua from 'highlight.js/lib/languages/lua';
-import hljsMarkdown from 'highlight.js/lib/languages/markdown';
-import hljsSCSS from 'highlight.js/lib/languages/scss';
-import hljsTypescript from 'highlight.js/lib/languages/typescript';
-import hljsKotlin from 'highlight.js/lib/languages/kotlin';
-import hljsGo from 'highlight.js/lib/languages/go';
-import hljsGraphQl from 'highlight.js/lib/languages/graphql';
-import hljsPython from 'highlight.js/lib/languages/python';
-import hljsRuby from 'highlight.js/lib/languages/ruby';
-import hljsXML from 'highlight.js/lib/languages/xml';
-import hljsYAML from 'highlight.js/lib/languages/yaml';
-import hljsRust from 'highlight.js/lib/languages/rust';
-import { FormatSupported } from './constants';
+// Languages - Fine-grained imports
+import langCss from '@shikijs/langs/css';
+import langJavascript from '@shikijs/langs/javascript';
+import langTypescript from '@shikijs/langs/typescript';
+import langJson from '@shikijs/langs/json';
+import langHtml from '@shikijs/langs/html';
+import langMarkdown from '@shikijs/langs/markdown';
+import langYaml from '@shikijs/langs/yaml';
+import langGraphql from '@shikijs/langs/graphql';
+import langGo from '@shikijs/langs/go';
+import langJava from '@shikijs/langs/java';
+import langKotlin from '@shikijs/langs/kotlin';
+import langPython from '@shikijs/langs/python';
+import langRuby from '@shikijs/langs/ruby';
+import langRust from '@shikijs/langs/rust';
+import langHaskell from '@shikijs/langs/haskell';
+import langLua from '@shikijs/langs/lua';
+import langScss from '@shikijs/langs/scss';
+import langLess from '@shikijs/langs/less';
 
-// Common
-hljs.registerLanguage(FormatSupported.JSON, hljsJSON);
-hljs.registerLanguage(FormatSupported.MARKDOWN, hljsMarkdown);
-hljs.registerLanguage(FormatSupported.HTML, hljsXML);
-hljs.registerLanguage(FormatSupported.YAML, hljsYAML);
+// Singleton pattern - cache the highlighter instance
+let highlighterPromise: Promise<HighlighterCore> | null = null;
 
-// CSS
-hljs.registerLanguage(FormatSupported.CSS, hljsCSS);
-hljs.registerLanguage(FormatSupported.LESS, hljsLess);
-hljs.registerLanguage(FormatSupported.SCSS, hljsSCSS);
+export const SHIKI_THEMES = [
+  'dracula',
+  'github-dark',
+  'github-light',
+  'dark-plus',
+  'light-plus',
+  'material-theme-darker',
+  'material-theme-ocean',
+  'material-theme-palenight',
+  'monokai',
+  'nord',
+  'one-dark-pro',
+  'one-light',
+  'solarized-dark',
+  'solarized-light',
+  'min-dark',
+  'min-light',
+  'catppuccin-mocha',
+  'catppuccin-latte',
+  'vitesse-dark',
+  'vitesse-light',
+  'tokyo-night',
+  'rose-pine',
+  'ayu-dark',
+] as const;
 
-// Scripting
-hljs.registerLanguage(FormatSupported.GO, hljsGo);
-hljs.registerLanguage(FormatSupported.GRAPHQL, hljsGraphQl);
-hljs.registerLanguage(FormatSupported.HASKELL, hljsHaskell);
-hljs.registerLanguage(FormatSupported.JAVA, hljsJava);
-hljs.registerLanguage(FormatSupported.JAVASCRIPT, hljsJavascript);
-hljs.registerLanguage(FormatSupported.TYPESCRIPT, hljsTypescript);
-hljs.registerLanguage(FormatSupported.KOTLIN, hljsKotlin);
-hljs.registerLanguage(FormatSupported.LUA, hljsLua);
-hljs.registerLanguage(FormatSupported.PYTHON, hljsPython);
-hljs.registerLanguage(FormatSupported.RUBY, hljsRuby);
-hljs.registerLanguage(FormatSupported.RUST, hljsRust);
+export type ShikiTheme = (typeof SHIKI_THEMES)[number];
 
-hljs.highlightAll();
+async function getHighlighter(): Promise<HighlighterCore> {
+  if (!highlighterPromise) {
+    highlighterPromise = createHighlighterCore({
+      themes: [
+        themeDracula,
+        themeGithubDark,
+        themeGithubLight,
+        themeDarkPlus,
+        themeLightPlus,
+        themeMaterialDarker,
+        themeMaterialOcean,
+        themeMaterialPalenight,
+        themeMonokai,
+        themeNord,
+        themeOneDarkPro,
+        themeOneLight,
+        themeSolarizedDark,
+        themeSolarizedLight,
+        themeMinDark,
+        themeMinLight,
+        themeCatppuccinMocha,
+        themeCatppuccinLatte,
+        themeVitesseDark,
+        themeVitesseLight,
+        themeTokyoNight,
+        themeRosePine,
+        themeAyuDark,
+      ],
+      langs: [
+        langCss,
+        langJavascript,
+        langTypescript,
+        langJson,
+        langHtml,
+        langMarkdown,
+        langYaml,
+        langGraphql,
+        langGo,
+        langJava,
+        langKotlin,
+        langPython,
+        langRuby,
+        langRust,
+        langHaskell,
+        langLua,
+        langScss,
+        langLess,
+      ],
+      engine: createJavaScriptRegexEngine(),
+    });
+  }
+  return highlighterPromise;
+}
 
-export const highlight = hljs;
+export async function highlight(
+  code: string,
+  lang: string,
+  theme: ShikiTheme
+): Promise<string> {
+  const highlighter = await getHighlighter();
+  return highlighter.codeToHtml(code, { lang, theme });
+}
