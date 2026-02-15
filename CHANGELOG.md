@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [2.1.0] - 2025-02-15
+
+### Added
+
+- Added line numbers support for all themes, with automatic font matching to the selected theme;
+
 ## [2.0.0] - 2025-02-13
 
 ### Added

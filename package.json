@@ -1,6 +1,6 @@
 {
   "name": "Format-Code",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A Figma plugin designed to allow you to format and syntax highlighting code",
   "main": "code.js",
   "scripts": {

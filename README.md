@@ -11,6 +11,7 @@ Format Code makes it easy to format code snippets and add a theme for syntax hig
 - Font selection with Google Fonts support for monospace fonts;
 - Automatic language detection;
 - Code formatting with Prettier;
+- Line numbers supports;
 
 Design & Developed by Cândido Sales.
 
