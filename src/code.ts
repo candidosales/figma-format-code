@@ -98,8 +98,81 @@ async function applyTheme(theme: Theme) {
     // Ensure to load font from the current theme
     await figma.loadFontAsync(theme.global.fontName);
 
+    // Process content with line numbers if enabled
+    let finalContent = theme.contentHTML;
+    let adjustedNodePaints = [...theme.nodePaints];
+    const lineNumberRanges: Array<{ start: number; end: number }> = [];
+
+    if (theme.showLineNumbers) {
+      const lines = theme.contentHTML.split('\n');
+      const totalLines = lines.length;
+      const lineNumWidth = String(totalLines).length;
+      
+      // Build new content with line numbers and track offsets
+      let newContent = '';
+      let originalOffset = 0;
+      let newOffset = 0;
+      const offsetMap: Array<{ originalStart: number; newStart: number; lineNumLength: number }> = [];
+
+      lines.forEach((line, index) => {
+        const lineNum = String(index + 1).padStart(lineNumWidth, ' ');
+        const lineNumPrefix = `${lineNum}  `; // Line number with 2 space separator
+        
+        // Track line number position for styling
+        lineNumberRanges.push({
+          start: newOffset,
+          end: newOffset + lineNum.length,
+        });
+        
+        // Track offset mapping for this line
+        offsetMap.push({
+          originalStart: originalOffset,
+          newStart: newOffset + lineNumPrefix.length,
+          lineNumLength: lineNumPrefix.length,
+        });
+        
+        newContent += lineNumPrefix + line;
+        if (index < lines.length - 1) {
+          newContent += '\n';
+        }
+        
+        originalOffset += line.length + 1; // +1 for newline
+        newOffset += lineNumPrefix.length + line.length + 1;
+      });
+
+      finalContent = newContent;
+
+      // Adjust all nodePaint ranges based on line numbers
+      adjustedNodePaints = theme.nodePaints.map((paint) => {
+        let newStart = paint.range.start;
+        let newEnd = paint.range.end;
+        
+        // Calculate cumulative offset based on how many line prefixes come before this range
+        let cumulativeOffset = 0;
+        for (const mapping of offsetMap) {
+          if (paint.range.start >= mapping.originalStart) {
+            cumulativeOffset = mapping.newStart - mapping.originalStart + mapping.lineNumLength - mapping.lineNumLength;
+            // Simpler: count how many lines before this position
+          }
+        }
+        
+        // Count newlines before the start position to determine offset
+        const contentBeforeStart = theme.contentHTML.substring(0, paint.range.start);
+        const linesBeforeStart = (contentBeforeStart.match(/\n/g) || []).length;
+        const lineNumPrefixLength = lineNumWidth + 2; // number width + 2 spaces
+        
+        newStart = paint.range.start + (linesBeforeStart + 1) * lineNumPrefixLength;
+        newEnd = paint.range.end + (linesBeforeStart + 1) * lineNumPrefixLength;
+        
+        return {
+          ...paint,
+          range: { start: newStart, end: newEnd },
+        };
+      });
+    }
+
     const nodeText = figma.createText();
-    nodeText.characters = theme.contentHTML;
+    nodeText.characters = finalContent;
 
     nodeText.fills = [
       {
@@ -111,7 +184,7 @@ async function applyTheme(theme: Theme) {
       },
     ];
 
-    theme.nodePaints.forEach((nodePaint) => {
+    adjustedNodePaints.forEach((nodePaint) => {
       try {
         // Sometimes the content have HTML spans. It should be ignored
         if (nodePaint.content.includes('span')) {
@@ -130,6 +203,25 @@ async function applyTheme(theme: Theme) {
         console.error('[Format Code Error]', e instanceof Error ? e.message : e);
       }
     });
+
+    // Apply line number styling if enabled
+    if (theme.showLineNumbers && theme.lineNumberColor) {
+      const lineNumberPaint: SolidPaint = {
+        blendMode: 'NORMAL',
+        color: theme.lineNumberColor,
+        opacity: 0.6,
+        type: 'SOLID',
+        visible: true,
+      };
+      
+      lineNumberRanges.forEach((range) => {
+        try {
+          nodeText.setRangeFills(range.start, range.end, [lineNumberPaint]);
+        } catch (e) {
+          console.error('[Format Code Error] Line number styling:', e instanceof Error ? e.message : e);
+        }
+      });
+    }
 
     const nodeRectangle = figma.createRectangle();
     nodeRectangle.fills = [

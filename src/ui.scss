@@ -75,6 +75,25 @@ button {
   }
 }
 
+.field-checkbox {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  
+  label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    margin-bottom: 0;
+    margin-top: 16px;
+  }
+  
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+}
+
 .compare {
   display: flex;
   flex-direction: row;
@@ -156,6 +175,26 @@ button {
     height: 100%;
     margin: 0;
     overflow: auto;
+    
+    // Line numbers support
+    code {
+      counter-reset: line;
+    }
+    
+    &.with-line-numbers {
+      code .line {
+        &::before {
+          counter-increment: line;
+          content: counter(line);
+          display: inline-block;
+          margin-right: 1em;
+          text-align: right;
+          color: rgba(115, 138, 148, 0.6);
+          user-select: none;
+          flex-shrink: 0;
+        }
+      }
+    }
   }
 }
 

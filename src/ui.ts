@@ -21,10 +21,12 @@ const $buttonPreview = document.getElementById('button-preview')!;
 const $selectFormat = document.getElementById('select-format')!;
 const $selectTheme = document.getElementById('select-theme')!;
 const $selectFont = document.getElementById('select-font') as HTMLSelectElement;
+const $checkboxLineNumbers = document.getElementById('checkbox-line-numbers') as HTMLInputElement;
 
 let format = ($selectFormat as HTMLInputElement).value as FormatSupported;
 let theme = ($selectTheme as HTMLInputElement).value as ShikiTheme;
 let fontFamily = $selectFont.value;
+let showLineNumbers = $checkboxLineNumbers.checked;
 let appliedTheme: Theme;
 
 // Track loaded fonts to avoid duplicate loading
@@ -87,6 +89,11 @@ $selectTheme.onchange = () => {
 $selectFont.onchange = async () => {
   updateValues();
   await loadGoogleFont(fontFamily);
+  formatHighlightCode();
+};
+
+$checkboxLineNumbers.onchange = () => {
+  updateValues();
   formatHighlightCode();
 };
 
@@ -159,7 +166,7 @@ async function formatHighlightCode(): Promise<void> {
 
     if (result.formatCode !== '') {
       try {
-        const highlightedHtml = await highlight(result.formatCode, format, theme);
+        const highlightedHtml = await highlight(result.formatCode, format, theme, showLineNumbers);
         $previewContent.innerHTML = highlightedHtml;
         updatePreviewFont();
         hideParserError();
@@ -177,6 +184,7 @@ function updateValues() {
     .value as FormatSupported;
   theme = (document.getElementById('select-theme') as HTMLInputElement).value as ShikiTheme;
   fontFamily = (document.getElementById('select-font') as HTMLInputElement).value;
+  showLineNumbers = (document.getElementById('checkbox-line-numbers') as HTMLInputElement).checked;
 }
 
 function showParserError(errorMessage: string): void {
@@ -203,6 +211,7 @@ function applyTheme(): Theme {
       format,
       nodePaints: [],
       contentHTML: '',
+      showLineNumbers: false,
       global: {
         color: { r: 0, g: 0, b: 0 },
         backgroundColor: { r: 1, g: 1, b: 1 },
@@ -267,10 +276,20 @@ function applyTheme(): Theme {
   // Get default text color from code element
   const codeStyle = window.getComputedStyle(shikiCode);
 
+  // Calculate line number color (muted version of text color)
+  const textColor = calculateRGB(codeStyle.color);
+  const lineNumberColor = {
+    r: textColor.r * 0.5,
+    g: textColor.g * 0.5,
+    b: textColor.b * 0.5,
+  };
+
   return {
     format,
     nodePaints: nodePaints,
     contentHTML: contentHTML,
+    showLineNumbers: showLineNumbers,
+    lineNumberColor: lineNumberColor,
     global: {
       color: calculateRGB(codeStyle.color),
       backgroundColor: backgroundColor,

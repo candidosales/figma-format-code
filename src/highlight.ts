@@ -135,8 +135,16 @@ async function getHighlighter(): Promise<HighlighterCore> {
 export async function highlight(
   code: string,
   lang: string,
-  theme: ShikiTheme
+  theme: ShikiTheme,
+  showLineNumbers: boolean = false
 ): Promise<string> {
   const highlighter = await getHighlighter();
-  return highlighter.codeToHtml(code, { lang, theme });
+  let html = highlighter.codeToHtml(code, { lang, theme });
+  
+  // Add line numbers class to pre element if enabled
+  if (showLineNumbers) {
+    html = html.replace('<pre class="shiki', '<pre class="shiki with-line-numbers');
+  }
+  
+  return html;
 }

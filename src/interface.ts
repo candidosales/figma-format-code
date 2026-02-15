@@ -16,6 +16,8 @@ export interface Theme {
   format: string;
   nodePaints: Array<NodePaint>;
   contentHTML: string;
+  showLineNumbers: boolean;
+  lineNumberColor?: RGB;
   global: ThemeGlobal;
 }
 
