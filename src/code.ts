@@ -217,6 +217,7 @@ async function applyTheme(theme: Theme) {
       lineNumberRanges.forEach((range) => {
         try {
           nodeText.setRangeFills(range.start, range.end, [lineNumberPaint]);
+          nodeText.setRangeFontName(range.start, range.end, theme.global.fontName);
         } catch (e) {
           console.error('[Format Code Error] Line number styling:', e instanceof Error ? e.message : e);
         }
