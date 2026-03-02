@@ -3,6 +3,8 @@ import { FormatSupported } from './constants';
 
 // Map flourite language names (with shiki: true) to FormatSupported enum
 const languageMap: Record<string, FormatSupported> = {
+  'c': FormatSupported.C,
+  'cpp': FormatSupported.CPP,
   'css': FormatSupported.CSS,
   'go': FormatSupported.GO,
   'graphql': FormatSupported.GRAPHQL,

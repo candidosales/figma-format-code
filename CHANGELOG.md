@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [2.2.0] - 2025-03-02
+
+### Added
+
+- Added support to C and C++;
+
 ## [2.1.0] - 2025-02-15
 
 ### Added

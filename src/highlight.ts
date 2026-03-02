@@ -28,6 +28,8 @@ import themeRosePine from '@shikijs/themes/rose-pine';
 import themeAyuDark from '@shikijs/themes/ayu-dark';
 
 // Languages - Fine-grained imports
+import langC from '@shikijs/langs/c';
+import langCpp from '@shikijs/langs/cpp';
 import langCss from '@shikijs/langs/css';
 import langJavascript from '@shikijs/langs/javascript';
 import langTypescript from '@shikijs/langs/typescript';
@@ -107,6 +109,8 @@ async function getHighlighter(): Promise<HighlighterCore> {
         themeAyuDark,
       ],
       langs: [
+        langC,
+        langCpp,
         langCss,
         langJavascript,
         langTypescript,

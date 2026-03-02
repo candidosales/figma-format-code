@@ -25,6 +25,12 @@ export const formatCode = (data: FormatData): FormatCode => {
   }
   
   switch (data.format) {
+      case FormatSupported.C:
+      case FormatSupported.CPP:
+        return {
+          formatCode: data.code,
+          error: '',
+        };
       case FormatSupported.CSS:
         return getFormatCodeConfig(
           data.code,
