@@ -1,5 +1,7 @@
 // Variables
 export enum FormatSupported {
+  C = 'c',
+  CPP = 'cpp',
   CSS = 'css',
   GRAPHQL = 'graphql',
   GO = 'go',

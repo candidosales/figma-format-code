@@ -21,6 +21,7 @@ Design & Developed by Cândido Sales.
 
 ## Languages supported
 
+- C and C++;
 - CSS;
 - HTML;
   - It has a known issue with `<span>` tags. I'm still investigating how to fix it;
