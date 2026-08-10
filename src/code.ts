@@ -74,6 +74,8 @@ figma.ui.onmessage = async (msg) => {
     const theme = msg?.theme as Theme;
     if (theme) {
       await applyTheme(theme);
+      figma.ui.postMessage({ type: 'applied' });
+      setTimeout(() => figma.closePlugin(), 900);
     }
   }
 };
@@ -83,8 +85,10 @@ async function applyTheme(theme: Theme) {
   const cornerRadius = 12;
 
   // Load all fonts before to create or update text nodes;
+  let originalNode: TextNode | null = null;
   for (const node of figma.currentPage.selection) {
     if (node.type === 'TEXT') {
+      originalNode = node;
       const nodeFonts = node.getRangeAllFontNames(0, node.characters.length);
       await loadFonts(nodeFonts);
     }
@@ -262,12 +266,20 @@ async function applyTheme(theme: Theme) {
       nodeText.height + padding * 2
     );
 
-    figma.viewport.scrollAndZoomIntoView([nodeFrame]);
+    // Place the output next to the original node so they're easy to compare
+    const originalBounds = originalNode?.absoluteBoundingBox;
+    if (originalBounds) {
+      const gap = 40;
+      nodeFrame.x = originalBounds.x + originalBounds.width + gap;
+      nodeFrame.y = originalBounds.y;
+    }
+
+    figma.viewport.scrollAndZoomIntoView(
+      originalNode ? [originalNode, nodeFrame] : [nodeFrame]
+    );
   } catch (e) {
     console.error('[Format Code Error]', e instanceof Error ? e.message : e);
   }
-
-  figma.closePlugin();
 }
 
 async function loadFonts(fonts: FontName[]): Promise<FontName[]> {

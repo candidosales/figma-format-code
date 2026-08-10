@@ -15,6 +15,7 @@ import {
 const $originalContent = document.getElementById('original-content')!;
 const $originalError = document.getElementById('original-error')!;
 const $previewContent = document.getElementById('preview-content')!;
+const $appliedFlash = document.getElementById('applied-flash')!;
 
 const $buttonApply = document.getElementById('button-apply')!;
 const $buttonPreview = document.getElementById('button-preview')!;
@@ -133,6 +134,10 @@ onmessage = async (event) => {
   
   if (message.type === 'fonts') {
     populateFontSelect(message.fonts);
+  }
+
+  if (message.type === 'applied') {
+    $appliedFlash.classList.add('show');
   }
 };
 
