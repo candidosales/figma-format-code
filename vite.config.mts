@@ -13,7 +13,7 @@ export default defineConfig({
     outDir: "../dist",
     emptyOutDir: false,
     rollupOptions: {
-      input: "./src/ui.html",
+      input: "ui.html",
       output: {
         inlineDynamicImports: true,
       },

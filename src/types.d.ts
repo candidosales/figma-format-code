@@ -1,3 +1,5 @@
+declare module '*.scss';
+
 // Type declarations for prettier (v2.x)
 declare module 'prettier' {
   export function format(source: string, options?: Options): string;

@@ -158,7 +158,7 @@ async function populateFontSelect(fonts: string[]) {
 
 async function formatHighlightCode(): Promise<void> {
   if (format) {
-    const result = formatCode({ format, code: $originalContent.textContent });
+    const result = await formatCode({ format, code: $originalContent.textContent });
 
     if (result.error !== '') {
       showParserError(result.error);
