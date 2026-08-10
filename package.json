@@ -12,7 +12,9 @@
     "tsc": "oxlint --type-aware --type-check",
     "prettier": "prettier --write ./**/*",
     "lint": "oxlint .",
-    "lint:fix": "oxlint --fix ."
+    "lint:fix": "oxlint --fix .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "author": "Candido Sales Gomes <candidosg@gmail.com>",
   "license": "MIT",
@@ -27,14 +29,15 @@
   "devDependencies": {
     "@figma/eslint-plugin-figma-plugins": "1.0.0",
     "@figma/plugin-typings": "1.133.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "concurrently": "9.2.1",
     "esbuild": "0.27.3",
     "oxlint": "1.78.0",
     "oxlint-tsgolint": "7.0.2001",
     "sass": "1.97.3",
-    "@typescript/native": "npm:typescript@^7.0.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vite": "8.2.1",
-    "vite-plugin-singlefile": "2.3.3"
+    "vite-plugin-singlefile": "2.3.3",
+    "vitest": "^4.1.10"
   }
 }
