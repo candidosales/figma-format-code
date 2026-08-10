@@ -1,6 +1,6 @@
 {
   "name": "Format-Code",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A Figma plugin designed to allow you to format and syntax highlighting code",
   "main": "code.js",
   "scripts": {
@@ -34,7 +34,6 @@
     "sass": "1.97.3",
     "@typescript/native": "npm:typescript@^7.0.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "typescript-eslint": "8.56.1",
     "vite": "8.2.1",
     "vite-plugin-singlefile": "2.3.3"
   }

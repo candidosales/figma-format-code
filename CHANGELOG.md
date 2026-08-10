@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## [2.2.1] - 2026-08-10
+
+### Fixed
+
+- Fixed Preview and Apply not working for Prettier-backed formats (CSS, LESS, SCSS, JSON, HTML, Markdown, JavaScript/TypeScript, YAML, GraphQL) after the Prettier 3 upgrade — `prettier.format()` is now awaited instead of being used as a synchronous call;
+
+### Changed
+
+- Upgraded TypeScript to version 7 (native Go compiler), with `@typescript/typescript6` aliased in for tools that still need the classic compiler API;
+
+### Removed
+
+- Removed the unused `typescript-eslint` devDependency, whose peer range conflicted with the TypeScript 7 upgrade;
+
 ## [2.2.0] - 2025-03-02
 
 ### Added
