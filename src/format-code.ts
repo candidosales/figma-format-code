@@ -16,7 +16,7 @@ import parserYaml from 'prettier/parser-yaml';
 /*
  * formatCode - format the code
  */
-export const formatCode = (data: FormatData): FormatCode => {
+export const formatCode = async (data: FormatData): Promise<FormatCode> => {
   if (!data) {
     return {
       formatCode: '',
@@ -86,14 +86,14 @@ export const formatCode = (data: FormatData): FormatCode => {
   }
 };
 
-const getFormatCodeConfig = (
+const getFormatCodeConfig = async (
   code: string,
   format: FormatSupported,
   parser: unknown
-): FormatCode => {
+): Promise<FormatCode> => {
   try {
     return {
-      formatCode: prettier.format(code, {
+      formatCode: await prettier.format(code, {
         parser: format,
         plugins: [parser],
       }),
