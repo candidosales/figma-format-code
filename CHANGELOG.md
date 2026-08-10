@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [2.2.2] - 2026-08-10
+
+### Added
+
+- Added an "Applied ✓" flash on the preview panel when clicking Apply, shown briefly before the plugin closes;
+
+### Changed
+
+- The generated output frame now spawns next to the original selected node (instead of far away on the canvas), and the viewport zooms to fit both so they're easy to compare;
+
 ## [2.2.1] - 2026-08-10
 
 ### Fixed
