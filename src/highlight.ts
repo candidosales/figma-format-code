@@ -49,6 +49,8 @@ import langLua from '@shikijs/langs/lua';
 import langScss from '@shikijs/langs/scss';
 import langLess from '@shikijs/langs/less';
 
+import { highlightWithTwinkleplop, supportsTwinkleplop } from './twinkleplop';
+
 // Singleton pattern - cache the highlighter instance
 let highlighterPromise: Promise<HighlighterCore> | null = null;
 
@@ -142,6 +144,10 @@ export async function highlight(
   theme: ShikiTheme,
   showLineNumbers: boolean = false
 ): Promise<string> {
+  if (supportsTwinkleplop(lang, theme)) {
+    return highlightWithTwinkleplop(code, lang, theme, showLineNumbers);
+  }
+
   const highlighter = await getHighlighter();
   let html = highlighter.codeToHtml(code, { lang, theme });
   

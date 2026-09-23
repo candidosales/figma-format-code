@@ -22,6 +22,22 @@
     "*.{js,jsx,ts,tsx,mjs,cjs}": "pnpm run lint"
   },
   "dependencies": {
+    "@twinkleplop/core": "0.2.1",
+    "@twinkleplop/css": "0.1.4",
+    "@twinkleplop/go": "0.1.4",
+    "@twinkleplop/html": "0.1.4",
+    "@twinkleplop/javascript": "0.1.4",
+    "@twinkleplop/json": "0.1.4",
+    "@twinkleplop/markdown": "0.1.4",
+    "@twinkleplop/python": "0.1.4",
+    "@twinkleplop/rust": "0.1.4",
+    "@twinkleplop/theme-ayu": "0.1.1",
+    "@twinkleplop/theme-catppuccin": "0.1.1",
+    "@twinkleplop/theme-github": "0.2.1",
+    "@twinkleplop/theme-rose-pine": "0.1.1",
+    "@twinkleplop/theme-solarized": "0.1.1",
+    "@twinkleplop/typescript": "0.1.4",
+    "@twinkleplop/yaml": "0.1.4",
     "flourite": "1.3.0",
     "prettier": "3.9.6",
     "shiki": "4.4.2"
