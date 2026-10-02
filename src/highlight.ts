@@ -1,6 +1,7 @@
 // Shiki - Syntax Highlighter with Fine-grained Bundle
-import { createHighlighterCore, HighlighterCore } from 'shiki/core';
+import { createHighlighterCore, HighlighterCore, LanguageRegistration } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
+import { FormatSupported } from './constants';
 
 // Themes and languages are loaded on first use, so opening the plugin only
 // pays for the theme and language actually shown.
@@ -30,7 +31,7 @@ const THEME_LOADERS = {
   'ayu-dark': () => import('@shikijs/themes/ayu-dark'),
 };
 
-const LANG_LOADERS: Record<string, () => Promise<unknown>> = {
+const LANG_LOADERS: Record<FormatSupported, () => Promise<{ default: LanguageRegistration[] }>> = {
   c: () => import('@shikijs/langs/c'),
   cpp: () => import('@shikijs/langs/cpp'),
   css: () => import('@shikijs/langs/css'),
@@ -84,23 +85,15 @@ function loadOnce(key: string, load: () => Promise<void>): Promise<void> {
 }
 
 function ensureTheme(highlighter: HighlighterCore, theme: ShikiTheme): Promise<void> {
-  return loadOnce(`theme:${theme}`, async () => {
-    const mod = (await THEME_LOADERS[theme]()) as { default: Parameters<HighlighterCore['loadTheme']>[0] };
-    await highlighter.loadTheme(mod.default);
-  });
+  return loadOnce(`theme:${theme}`, () => highlighter.loadTheme(THEME_LOADERS[theme]));
 }
 
-function ensureLang(highlighter: HighlighterCore, lang: string): Promise<void> {
+function ensureLang(highlighter: HighlighterCore, lang: FormatSupported): Promise<void> {
   // Markdown fences can hold any supported language; load them all so fenced
   // code is colored no matter which languages were used before.
-  const langs = lang === 'markdown' ? Object.keys(LANG_LOADERS) : [lang];
+  const langs = lang === FormatSupported.MARKDOWN ? Object.values(FormatSupported) : [lang];
   return Promise.all(
-    langs.filter((name) => name in LANG_LOADERS).map((name) =>
-      loadOnce(`lang:${name}`, async () => {
-        const mod = (await LANG_LOADERS[name]()) as { default: Parameters<HighlighterCore['loadLanguage']>[0] };
-        await highlighter.loadLanguage(mod.default);
-      })
-    )
+    langs.map((name) => loadOnce(`lang:${name}`, () => highlighter.loadLanguage(LANG_LOADERS[name])))
   ).then(() => undefined);
 }
 
@@ -113,7 +106,7 @@ export function preloadHighlighter(theme: ShikiTheme): void {
 
 export async function highlight(
   code: string,
-  lang: string,
+  lang: FormatSupported,
   theme: ShikiTheme,
   showLineNumbers: boolean = false
 ): Promise<string> {
