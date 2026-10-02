@@ -2,138 +2,113 @@
 import { createHighlighterCore, HighlighterCore } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
-// Themes - Fine-grained imports (no WASM, smaller bundle)
-import themeDracula from '@shikijs/themes/dracula';
-import themeGithubDark from '@shikijs/themes/github-dark';
-import themeGithubLight from '@shikijs/themes/github-light';
-import themeDarkPlus from '@shikijs/themes/dark-plus';
-import themeLightPlus from '@shikijs/themes/light-plus';
-import themeMaterialDarker from '@shikijs/themes/material-theme-darker';
-import themeMaterialOcean from '@shikijs/themes/material-theme-ocean';
-import themeMaterialPalenight from '@shikijs/themes/material-theme-palenight';
-import themeMonokai from '@shikijs/themes/monokai';
-import themeNord from '@shikijs/themes/nord';
-import themeOneDarkPro from '@shikijs/themes/one-dark-pro';
-import themeOneLight from '@shikijs/themes/one-light';
-import themeSolarizedDark from '@shikijs/themes/solarized-dark';
-import themeSolarizedLight from '@shikijs/themes/solarized-light';
-import themeMinDark from '@shikijs/themes/min-dark';
-import themeMinLight from '@shikijs/themes/min-light';
-import themeCatppuccinMocha from '@shikijs/themes/catppuccin-mocha';
-import themeCatppuccinLatte from '@shikijs/themes/catppuccin-latte';
-import themeVitesseDark from '@shikijs/themes/vitesse-dark';
-import themeVitesseLight from '@shikijs/themes/vitesse-light';
-import themeTokyoNight from '@shikijs/themes/tokyo-night';
-import themeRosePine from '@shikijs/themes/rose-pine';
-import themeAyuDark from '@shikijs/themes/ayu-dark';
+// Themes and languages are loaded on first use, so opening the plugin only
+// pays for the theme and language actually shown.
+const THEME_LOADERS = {
+  dracula: () => import('@shikijs/themes/dracula'),
+  'github-dark': () => import('@shikijs/themes/github-dark'),
+  'github-light': () => import('@shikijs/themes/github-light'),
+  'dark-plus': () => import('@shikijs/themes/dark-plus'),
+  'light-plus': () => import('@shikijs/themes/light-plus'),
+  'material-theme-darker': () => import('@shikijs/themes/material-theme-darker'),
+  'material-theme-ocean': () => import('@shikijs/themes/material-theme-ocean'),
+  'material-theme-palenight': () => import('@shikijs/themes/material-theme-palenight'),
+  monokai: () => import('@shikijs/themes/monokai'),
+  nord: () => import('@shikijs/themes/nord'),
+  'one-dark-pro': () => import('@shikijs/themes/one-dark-pro'),
+  'one-light': () => import('@shikijs/themes/one-light'),
+  'solarized-dark': () => import('@shikijs/themes/solarized-dark'),
+  'solarized-light': () => import('@shikijs/themes/solarized-light'),
+  'min-dark': () => import('@shikijs/themes/min-dark'),
+  'min-light': () => import('@shikijs/themes/min-light'),
+  'catppuccin-mocha': () => import('@shikijs/themes/catppuccin-mocha'),
+  'catppuccin-latte': () => import('@shikijs/themes/catppuccin-latte'),
+  'vitesse-dark': () => import('@shikijs/themes/vitesse-dark'),
+  'vitesse-light': () => import('@shikijs/themes/vitesse-light'),
+  'tokyo-night': () => import('@shikijs/themes/tokyo-night'),
+  'rose-pine': () => import('@shikijs/themes/rose-pine'),
+  'ayu-dark': () => import('@shikijs/themes/ayu-dark'),
+};
 
-// Languages - Fine-grained imports
-import langC from '@shikijs/langs/c';
-import langCpp from '@shikijs/langs/cpp';
-import langCss from '@shikijs/langs/css';
-import langJavascript from '@shikijs/langs/javascript';
-import langTypescript from '@shikijs/langs/typescript';
-import langJson from '@shikijs/langs/json';
-import langHtml from '@shikijs/langs/html';
-import langMarkdown from '@shikijs/langs/markdown';
-import langYaml from '@shikijs/langs/yaml';
-import langGraphql from '@shikijs/langs/graphql';
-import langGo from '@shikijs/langs/go';
-import langJava from '@shikijs/langs/java';
-import langKotlin from '@shikijs/langs/kotlin';
-import langPython from '@shikijs/langs/python';
-import langRuby from '@shikijs/langs/ruby';
-import langRust from '@shikijs/langs/rust';
-import langHaskell from '@shikijs/langs/haskell';
-import langLua from '@shikijs/langs/lua';
-import langScss from '@shikijs/langs/scss';
-import langLess from '@shikijs/langs/less';
+const LANG_LOADERS: Record<string, () => Promise<unknown>> = {
+  c: () => import('@shikijs/langs/c'),
+  cpp: () => import('@shikijs/langs/cpp'),
+  css: () => import('@shikijs/langs/css'),
+  javascript: () => import('@shikijs/langs/javascript'),
+  typescript: () => import('@shikijs/langs/typescript'),
+  json: () => import('@shikijs/langs/json'),
+  html: () => import('@shikijs/langs/html'),
+  markdown: () => import('@shikijs/langs/markdown'),
+  yaml: () => import('@shikijs/langs/yaml'),
+  graphql: () => import('@shikijs/langs/graphql'),
+  go: () => import('@shikijs/langs/go'),
+  java: () => import('@shikijs/langs/java'),
+  kotlin: () => import('@shikijs/langs/kotlin'),
+  python: () => import('@shikijs/langs/python'),
+  ruby: () => import('@shikijs/langs/ruby'),
+  rust: () => import('@shikijs/langs/rust'),
+  haskell: () => import('@shikijs/langs/haskell'),
+  lua: () => import('@shikijs/langs/lua'),
+  scss: () => import('@shikijs/langs/scss'),
+  less: () => import('@shikijs/langs/less'),
+};
+
+export type ShikiTheme = keyof typeof THEME_LOADERS;
+
+export const SHIKI_THEMES = Object.keys(THEME_LOADERS) as ShikiTheme[];
 
 // Singleton pattern - cache the highlighter instance
 let highlighterPromise: Promise<HighlighterCore> | null = null;
+const loading = new Map<string, Promise<void>>();
 
-export const SHIKI_THEMES = [
-  'dracula',
-  'github-dark',
-  'github-light',
-  'dark-plus',
-  'light-plus',
-  'material-theme-darker',
-  'material-theme-ocean',
-  'material-theme-palenight',
-  'monokai',
-  'nord',
-  'one-dark-pro',
-  'one-light',
-  'solarized-dark',
-  'solarized-light',
-  'min-dark',
-  'min-light',
-  'catppuccin-mocha',
-  'catppuccin-latte',
-  'vitesse-dark',
-  'vitesse-light',
-  'tokyo-night',
-  'rose-pine',
-  'ayu-dark',
-] as const;
-
-export type ShikiTheme = (typeof SHIKI_THEMES)[number];
-
-async function getHighlighter(): Promise<HighlighterCore> {
+function getHighlighter(): Promise<HighlighterCore> {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighterCore({
-      themes: [
-        themeDracula,
-        themeGithubDark,
-        themeGithubLight,
-        themeDarkPlus,
-        themeLightPlus,
-        themeMaterialDarker,
-        themeMaterialOcean,
-        themeMaterialPalenight,
-        themeMonokai,
-        themeNord,
-        themeOneDarkPro,
-        themeOneLight,
-        themeSolarizedDark,
-        themeSolarizedLight,
-        themeMinDark,
-        themeMinLight,
-        themeCatppuccinMocha,
-        themeCatppuccinLatte,
-        themeVitesseDark,
-        themeVitesseLight,
-        themeTokyoNight,
-        themeRosePine,
-        themeAyuDark,
-      ],
-      langs: [
-        langC,
-        langCpp,
-        langCss,
-        langJavascript,
-        langTypescript,
-        langJson,
-        langHtml,
-        langMarkdown,
-        langYaml,
-        langGraphql,
-        langGo,
-        langJava,
-        langKotlin,
-        langPython,
-        langRuby,
-        langRust,
-        langHaskell,
-        langLua,
-        langScss,
-        langLess,
-      ],
+      themes: [],
+      langs: [],
       engine: createJavaScriptRegexEngine(),
     });
   }
   return highlighterPromise;
+}
+
+// Loads once per key, even when several highlight calls race for it.
+function loadOnce(key: string, load: () => Promise<void>): Promise<void> {
+  let promise = loading.get(key);
+  if (!promise) {
+    promise = load();
+    loading.set(key, promise);
+    promise.catch(() => loading.delete(key));
+  }
+  return promise;
+}
+
+function ensureTheme(highlighter: HighlighterCore, theme: ShikiTheme): Promise<void> {
+  return loadOnce(`theme:${theme}`, async () => {
+    const mod = (await THEME_LOADERS[theme]()) as { default: Parameters<HighlighterCore['loadTheme']>[0] };
+    await highlighter.loadTheme(mod.default);
+  });
+}
+
+function ensureLang(highlighter: HighlighterCore, lang: string): Promise<void> {
+  // Markdown fences can hold any supported language; load them all so fenced
+  // code is colored no matter which languages were used before.
+  const langs = lang === 'markdown' ? Object.keys(LANG_LOADERS) : [lang];
+  return Promise.all(
+    langs.filter((name) => name in LANG_LOADERS).map((name) =>
+      loadOnce(`lang:${name}`, async () => {
+        const mod = (await LANG_LOADERS[name]()) as { default: Parameters<HighlighterCore['loadLanguage']>[0] };
+        await highlighter.loadLanguage(mod.default);
+      })
+    )
+  ).then(() => undefined);
+}
+
+// Start creating the highlighter before any code arrives from Figma.
+export function preloadHighlighter(theme: ShikiTheme): void {
+  getHighlighter()
+    .then((highlighter) => ensureTheme(highlighter, theme))
+    .catch((e) => console.error('[Format Code Error]', e instanceof Error ? e.message : e));
 }
 
 export async function highlight(
@@ -143,12 +118,13 @@ export async function highlight(
   showLineNumbers: boolean = false
 ): Promise<string> {
   const highlighter = await getHighlighter();
+  await Promise.all([ensureTheme(highlighter, theme), ensureLang(highlighter, lang)]);
   let html = highlighter.codeToHtml(code, { lang, theme });
-  
+
   // Add line numbers class to pre element if enabled
   if (showLineNumbers) {
     html = html.replace('<pre class="shiki', '<pre class="shiki with-line-numbers');
   }
-  
+
   return html;
 }

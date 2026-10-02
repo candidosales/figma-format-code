@@ -3,7 +3,7 @@ import './ui.scss';
 import { NodePaint, Theme } from './interface';
 import { FormatSupported } from './constants';
 import { formatCode } from './format-code';
-import { highlight, ShikiTheme } from './highlight';
+import { highlight, preloadHighlighter, ShikiTheme } from './highlight';
 import { detectLanguage } from './detect-language';
 import {
   calculateRGB,
@@ -54,6 +54,8 @@ async function loadGoogleFont(fontName: string): Promise<void> {
 }
 
 // Start
+
+preloadHighlighter(theme);
 
 parent.postMessage(
   {
