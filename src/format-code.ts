@@ -3,15 +3,17 @@ import { FormatCode, FormatData } from './interface';
 
 // Dependencies
 //// Prettier - Format
-import prettier from 'prettier';
+import * as prettier from 'prettier/standalone';
 
-import parserBabel from 'prettier/parser-babel';
-import parserGraphQl from 'prettier/parser-graphql';
-import parserHtml from 'prettier/parser-html';
-import parserMarkdown from 'prettier/parser-markdown';
-import parserPostcss from 'prettier/parser-postcss';
-import parserTypescript from 'prettier/parser-typescript';
-import parserYaml from 'prettier/parser-yaml';
+import * as parserBabel from 'prettier/plugins/babel';
+import * as parserEstree from 'prettier/plugins/estree';
+import * as parserGraphQl from 'prettier/plugins/graphql';
+import * as parserHtml from 'prettier/plugins/html';
+import * as parserMarkdown from 'prettier/plugins/markdown';
+import * as parserPostcss from 'prettier/plugins/postcss';
+import * as parserTypescript from 'prettier/plugins/typescript';
+import * as parserYaml from 'prettier/plugins/yaml';
+import type { Plugin } from 'prettier';
 
 /*
  * formatCode - format the code
@@ -89,13 +91,14 @@ export const formatCode = async (data: FormatData): Promise<FormatCode> => {
 const getFormatCodeConfig = async (
   code: string,
   format: FormatSupported,
-  parser: unknown
+  parser: Plugin
 ): Promise<FormatCode> => {
   try {
     return {
       formatCode: await prettier.format(code, {
         parser: format,
-        plugins: [parser],
+        // estree is the printer for the babel/typescript parsers in Prettier 3
+        plugins: [parser, parserEstree],
       }),
       error: '',
     };
